@@ -1,0 +1,157 @@
+
+<!Doctype html>
+<html lang="eng">
+
+<head>
+    <title>Business Uganda - The best businesses in Uganda</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="businessstyles.css">
+</head>
+<body>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Business Uganda</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="listofbusinesses.html" class="btn btn-lg">
+          <span class="glyphicon glyphicon-list"></span> Businesses 
+        </a>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="newbusiness.html" class="btn btn-lg">
+          <span class="glyphicon glyphicon-plus"></span> Create Business 
+        </a>
+      </li>
+    </ul>
+    <form class="navbar-form navbar-left" action="">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search for business location or category" maxlength="30" size="40" name="search">
+      </div>
+      <button type="submit" class="btn btn-default">Search</button>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          <span class="glyphicon glyphicon-user">
+          </span><span class="glyphicon glyphicon-triangle-bottom"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li>
+            <a href="#">
+              <span class="glyphicon glyphicon-edit"></span> Edit Account
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="glyphicon glyphicon-log-out"></span> Logout
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+              
+<div class="container-fluid text-center">    
+    <div class="row content">
+    	<h2 class="text-center">Create a review for: Xedrox</h2>
+    	<hr/>
+        <div class="col-sm-5">
+        
+        <h3 class="text-center">Business Details</h3>
+  <div class="list-group">
+  <ul>
+    <li class="list-group-item active">
+      <h4 class="list-group-item-heading">Business Information: Xedrox</h4>
+    </li>
+    <li  class="list-group-item text-left">
+      <div>
+          <span class="list-group-item-heading"><strong>Name:</strong></span>
+          <span class="list-group-item-text">Xedrox limited</span>
+      </div>
+      <div>
+          <span class="list-group-item-heading"><strong>Location:</strong></span>
+          <span class="list-group-item-text">Lira</span>
+      </div>
+      <div>
+          <span class="list-group-item-heading"><strong>Category:</strong></span>
+          <a href="viewexistingcategoryofbusiness.html" class="list-group-item-text">Information Technology</a>
+      </div>
+      <div>
+          <span class="list-group-item-heading"><strong>Reviews:</strong></span>
+          <a href="listexistingbusinessreviews.html" class="list-group-item-text">
+              <span class="badge">5</span> Reviews
+          </a>
+      </div>
+      <div>
+          <span class="list-group-item-heading"><strong>Star Rating:</strong></span>
+          <a href="#" class="list-group-item-text">
+                   <span class="glyphicon glyphicon-star"></span>
+                   <span class="glyphicon glyphicon-star"></span>
+                   <span class="glyphicon glyphicon-star"></span>
+                   <span class="glyphicon glyphicon-star"></span>
+                   <span class="glyphicon glyphicon-star-empty"></span>
+          </a>
+      </div>
+    </li>
+    <li  class="list-group-item">
+      <a href="editexistingbusiness.html" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit </a>
+      <a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete </a>
+    </li>
+  </ul>
+  </div>
+        
+        </div>
+        
+        <div class="col-sm-6">
+        <h3 class="text-center">Your review	</h3>
+        <form class="form-horizontal" action="">
+        <div class="form-group">
+                    <label class="control-label col-sm-4" for="businessrating">Rate(<span class="glyphicon glyphicon-star"></span>):</label>
+                    <div class="col-sm-8">
+                    <select class="form-control" id="businessrating">
+                        <option>5</option>
+                        <option>4</option>
+                        <option>3</option>
+                        <option>2</option>
+                        <option>1</option>
+                    </select>
+                    </div>
+        </div>
+                <div class="form-group">
+		    <label class="control-label col-sm-4" for="reviewsummary">Review Summary:</label>
+		    <div class="col-sm-8">
+                        <input class="form-control" placeholder="Review Summary" id="reviewsummary" maxlength="50" size="50">
+		    </div>
+                </div>
+                <div class="form-group">
+		    <label class="control-label col-sm-4" for="review">Your review:</label>
+		    <div class="col-sm-8">
+                        <textarea class="form-control" rows="5" id="review"></textarea>
+		    </div>
+                </div>
+                <button type="submit" class="btn btn-warning text-center"><span class="glyphicon glyphicon-plus"></span> Add your review</button>
+            </form>
+        </div>
+        </div>
+
+
+
+     </div>
+
+</div>
+
+<footer class="container-fluid text-center" data-offset-bottom="10">
+  <p>&copy; Roger Okello</p>
+</footer>
+</body>   
+</html>
+    
