@@ -1,2 +1,2 @@
-# weconnect-practice
-A simple app to practice creation of a business site
+# weconnect
+A app to enable you manage your business and reviews. Please visit a prototype at https://rogerokello.github.io/weconnect-practice/
