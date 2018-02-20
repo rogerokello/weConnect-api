@@ -148,7 +148,18 @@ def create_app():
 
         #check if the business is there
         if Business.id_exists(id):
-
+            # get all the reviews for this business currently available
+            business_reviews = Review.get_all_business_reviews(id)
+            if len(current_business_reviews) > 0:
+                response = {
+                    'Current business reviews are: ': business_reviews
+                }
+                return make_response(jsonify(response)), 201
+            else:
+                response = {
+                    'Message: ': 'Sorry currently no reviews are present'
+                }
+                return make_response(jsonify(response)), 404
         else:
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
