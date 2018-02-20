@@ -53,5 +53,19 @@ class WeConnectApiTestCase(unittest.TestCase):
         # check that Xedrox string in returned json response
         self.assertIn('Xedrox', str(response.data))
 
+    def test_api_can_get_business_by_id(self):
+        # first add a business
+        self.client().post('/businesses', 
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        response = self.client().get('/businesses/0')
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+        # check that Xedrox string in returned json response
+        self.assertIn('Xedrox', str(response.data))
+
 if __name__ == "__main__":
     unittest.main()
