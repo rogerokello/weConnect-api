@@ -82,4 +82,27 @@ def create_app():
         else:
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
+    #route to update a business by ID
+    @app.route('/businesses/<int:id>', methods=['PUT'])
+    def update_a_business_given_its_id(id):
+
+        #check if business is there
+        if Business.id_exists(id):
+            # get the data that was sent in the request
+            data = request.get_json()
+            
+            #invoke delete method of business class
+            Business.update(id = id,
+                            name = data['name'],
+                            category = data['category'],
+                            location = data['location'])
+
+            return make_response(
+                jsonify(
+                    {'Message': 'Business updated to' + data['name']}
+                )
+            ), 201
+        else:
+            return make_response(jsonify({'Message': 'Business was not found'})), 404
+
     return app
