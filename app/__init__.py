@@ -52,6 +52,20 @@ def create_app():
     # route to get a business by ID
     @app.route('/businesses/<int:id>', methods=['GET'])
     def get_a_business_by_id(id):
-       return make_response(jsonify({'message': 'not implemented yet'})), 404
+
+        #check if business is there
+        if Business.id_exists(id):
+
+            found_business = Business.get_by_id(id)
+            business_as_a_dict = {
+                'id': id,
+                'name': found_business.name,
+                'category': found_business.category,
+                'location': found_business.location
+            }
+
+            return make_response(jsonify({'Business found': business_as_a_dict})), 201
+        else:
+            return make_response(jsonify({'Message': 'Business was not found'})), 404
 
     return app
