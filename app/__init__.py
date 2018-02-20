@@ -3,7 +3,7 @@ from . import db
 
 def create_app():
     app = Flask(__name__)
-    from .models import Business
+    from .models import Business, Review
     from flask import request, jsonify, make_response
 
     #Route to register a new business
@@ -109,6 +109,37 @@ def create_app():
                     )
                 ), 500
         else:
+            return make_response(jsonify({'Message': 'Business was not found'})), 404
+
+    #review a business given its ID in the url
+    @app.route('/businesses/<int:id>/reviews', methods=['PUT'])
+    def review_a_business_given_its_id(id):
+
+        #check if the business is there
+        if Business.id_exists(id):
+            # get the data that was sent in the request
+            data = request.get_json()
+
+            #create review object
+            a_review = Review(
+                review_summary = data['review_summary'],
+                review_description = data['review_description']
+                star_rating = data['star_rating'],
+                business_id = id
+            )
+
+            #add review to the database
+            Review.add(a_review)
+
+            message = "Created review: " + a_review.review_summary + "successfuly"
+            response = {
+                'message': message
+            }
+
+            return make_response(jsonify(response)), 201
+
+        else:
+            
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
     return app
