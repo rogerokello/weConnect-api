@@ -68,4 +68,18 @@ def create_app():
         else:
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
+    #route to delete a business by ID
+    @app.route('/businesses/<int:id>', methods=['DELETE'])
+    def delete_a_business_by_id(id):
+
+        #check if business is there
+        if Business.id_exists(id):
+            
+            #invoke delete method of business class
+            Business.delete(id)
+
+            return make_response(jsonify({'Message': 'Business deleted'})), 201
+        else:
+            return make_response(jsonify({'Message': 'Business was not found'})), 404
+
     return app
