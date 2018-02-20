@@ -2,3 +2,4 @@ designs/
 docs/
 LICENSE
 venv/
+app/__pycache__/
