@@ -69,3 +69,12 @@ class Business():
             return True
         else:
             return False
+
+class Review():
+    # create a review object
+    def __init__(self, review_summary, review_description,
+                star_rating, business_id):
+        self.review_summary = review_summary
+        self.review_description = review_description
+        self.star_rating = star_rating
+        self.business_id = business_id
