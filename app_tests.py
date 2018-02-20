@@ -96,7 +96,7 @@ class WeConnectApiTestCase(unittest.TestCase):
                             content_type='application/json')
 
         # Edit business 
-        self.client().put('/businesses/0',
+        response = self.client().put('/businesses/0',
                             data=json.dumps(self.edited_business),
                             content_type='application/json')
 
