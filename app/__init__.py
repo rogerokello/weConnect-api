@@ -49,4 +49,9 @@ def create_app():
             }
             return make_response(jsonify(response)), 404
 
+    # route to get a business by ID
+    @app.route('/businesses/<int:id>', methods=['GET'])
+    def get_a_business_by_id(id):
+       return make_response(jsonify({'message': 'not implemented yet'})), 404
+
     return app
