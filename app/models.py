@@ -57,3 +57,15 @@ class Business():
             return id
         else:
             return None
+
+    #Method to update a business given its id
+    @classmethod
+    def update(self, id, name, category, location):
+        if self.id_exists(id):
+            business_to_update = self.get_by_id(id)
+            business_to_update.name = name
+            business_to_update.category = category
+            business_to_update.location = location
+            return True
+        else:
+            return False
