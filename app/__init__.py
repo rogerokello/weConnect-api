@@ -32,4 +32,21 @@ def create_app():
         }
         return make_response(jsonify(response)), 201
 
+    # route to get all businesses
+    @app.route('/businesses', methods=['GET'])
+    def get_all_businesses():
+        # get all the businesses currently available
+        current_businesses = Business.get_all()
+
+        if len(current_businesses) > 0:
+            response = {
+                'Your current businesses are: ': current_businesses
+            }
+            return make_response(jsonify(response)), 201
+        else:
+            response = {
+                'Message: ': 'Sorry currently no businesses are present'
+            }
+            return make_response(jsonify(response)), 404
+
     return app
