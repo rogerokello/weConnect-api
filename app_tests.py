@@ -67,5 +67,21 @@ class WeConnectApiTestCase(unittest.TestCase):
         # check that Xedrox string in returned json response
         self.assertIn('Xedrox', str(response.data))
 
+    def test_api_can_remove_a_business_by_id(self):
+        # first add a business
+        self.client().post('/businesses', 
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+        
+        #delete the business by its id
+        response = self.client().delete('/businesses/0')
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+        # check that Business deleted string in returned json response
+        self.assertIn('Business deleted', str(response.data))
+
+
 if __name__ == "__main__":
     unittest.main()
