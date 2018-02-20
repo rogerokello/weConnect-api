@@ -21,7 +21,10 @@ class WeConnectApiTestCase(unittest.TestCase):
             pass
 
     def tearDown(self):
-        pass
+        """teardown all initialized variables."""
+        with self.app.app_context():
+            # delete database contents
+            db.businesses.clear()
 
 if __name__ == "__main__":
     unittest.main()
