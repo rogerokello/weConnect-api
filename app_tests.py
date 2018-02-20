@@ -23,6 +23,12 @@ class WeConnectApiTestCase(unittest.TestCase):
                                 'location' : 'Kampala'
                             }
 
+        #create a dict to be used to store the review
+        self.a_business_review = {'review_summary':'Good stuff',
+                                'review_description': 'I liked every thing about it',
+                                'star_rating' : '5'
+                            }
+
         #bind the app context
         with self.app.app_context():
             pass
@@ -105,6 +111,23 @@ class WeConnectApiTestCase(unittest.TestCase):
 
         # check that Megatrends string in returned json response
         self.assertIn('Megatrends', str(response.data))
+
+    def test_api_can_create_a_business_review(self):
+        #first create a business
+        self.client().post('/businesses',
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        #make the review
+        response = self.client().post('/businesses/0/reviews',
+                            data=json.dumps(self.a_business_review),
+                            content_type='application/json')
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+        # check that Good stuff string in returned json response
+        self.assertIn('Good stuff', str(response.data))
         
 
 
