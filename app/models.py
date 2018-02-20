@@ -7,3 +7,8 @@ class Business():
         self.name = name
         self.category = category
         self.location = location
+
+    #Create a class method to add the business
+    @classmethod
+    def add(self, business):
+        businesses.append(business)
