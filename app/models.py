@@ -83,3 +83,23 @@ class Review():
     @classmethod
     def add(self, a_review):
         reviews.append(a_review)
+
+    # return all reviews as a list of dictionary items
+    # which you will return jsonify to return
+    @classmethod
+    def get_all_business_reviews(self, id):
+        business_reviews = []
+        for counter,one_review in enumerate(reviews):
+            #check for reviews with same business id
+            if int(one_review.business_id) == int(id):
+                #dict to store review
+                a_review = {
+                    'review_summary' : one_review.review_summary,
+                    'review_description' : one_review.review_description,
+                    'star_rating': one_review.star_rating,
+                    'business_id': one_review.business_id 
+                }
+                #attach what was found into business reviews
+                business_reviews.append(a_review)
+        #return an object you can easily jsonify when sending back
+        return business_reviews
