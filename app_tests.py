@@ -16,6 +16,13 @@ class WeConnectApiTestCase(unittest.TestCase):
                             'category': 'IT',
                             'location' : 'Lira'
                             }
+        
+        #create a dict to be used to edit business
+        self.edited_business = {'name':'Megatrends',
+                                'category': 'Confectionary',
+                                'location' : 'Kampala'
+                            }
+
         #bind the app context
         with self.app.app_context():
             pass
@@ -81,6 +88,25 @@ class WeConnectApiTestCase(unittest.TestCase):
 
         # check that Business deleted string in returned json response
         self.assertIn('Business deleted', str(response.data))
+
+    def test_api_can_modify_a_business_profile(self):
+        # first add a business
+        self.client().post('/businesses',
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        # Edit business 
+        self.client().put('/businesses/0',
+                            data=json.dumps(self.edited_business),
+                            content_type='application/json')
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+        # check that Megatrends string in returned json response
+        self.assertIn('Megatrends', str(response.data))
+        
+
 
 
 if __name__ == "__main__":
