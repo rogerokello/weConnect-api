@@ -142,4 +142,16 @@ def create_app():
 
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
+    #get all business reviews
+    @app.route('/businesses/<int:id>/reviews', methods=['GET'])
+    def get_business_reviews_given_its_id(id):
+
+        #check if the business is there
+        if Business.id_exists(id):
+
+        else:
+            return make_response(jsonify({'Message': 'Business was not found'})), 404
+
+
+
     return app
