@@ -28,3 +28,18 @@ class Business():
             current_businesses.append(a_business)
         
         return current_businesses
+
+    #Method to check if a business ID exists
+    @classmethod
+    def id_exists(self, business_id = None):
+        try:
+            businesses[int(business_id)]
+        except IndexError:
+            return False
+
+        try:
+            businesses[int(business_id)]
+        except ValueError:
+            return False
+
+        return True
