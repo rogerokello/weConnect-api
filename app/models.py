@@ -78,3 +78,7 @@ class Review():
         self.review_description = review_description
         self.star_rating = star_rating
         self.business_id = business_id
+
+    # add review object to database
+    def add(self, a_review):
+        reviews.append(a_review)
