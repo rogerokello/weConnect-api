@@ -1,4 +1,4 @@
-from .db import businesses
+from .db import businesses, reviews
 
 class Business(): 
     #initialise business   
