@@ -129,9 +129,24 @@ class WeConnectApiTestCase(unittest.TestCase):
 
         # check that Good stuff string in returned json response
         self.assertIn('Good stuff', str(response.data))
-        
 
 
+    def test_api_can_get_all_business_review(self):
+        #first create a business
+        self.client().post('/businesses',
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        #make the review
+        self.client().post('/businesses/0/reviews',
+                            data=json.dumps(self.a_business_review),
+                            content_type='application/json')
+
+        #get all the reviews
+        response = self.client().get('/businesses/0/reviews')
+
+        # check that Good stuff string in returned json response
+        self.assertIn('Good stuff', str(response.data))
 
 if __name__ == "__main__":
     unittest.main()
