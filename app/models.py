@@ -48,3 +48,11 @@ class Business():
     @classmethod
     def get_by_id(self, id):
         return businesses[id]
+
+    #Method to delete a biz by id
+    @classmethod
+    def delete(self, id=None):
+        if id is not None:
+            businesses.pop(int(id))
+            return id
+        else return None
