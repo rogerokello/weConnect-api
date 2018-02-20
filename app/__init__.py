@@ -92,16 +92,22 @@ def create_app():
             data = request.get_json()
             
             #invoke delete method of business class
-            Business.update(id = id,
-                            name = data['name'],
-                            category = data['category'],
-                            location = data['location'])
-
-            return make_response(
-                jsonify(
-                    {'Message': 'Business updated to' + data['name']}
-                )
-            ), 201
+            update_status = Business.update(id = id,
+                                            name = data['name'],
+                                            category = data['category'],
+                                            location = data['location'])
+            if update_status:
+                return make_response(
+                    jsonify(
+                        {'Message': 'Business updated to' + data['name']}
+                    )
+                ), 201
+            else:
+                return make_response(
+                    jsonify(
+                        {'Message': 'Failed to update business'}
+                    )
+                ), 500
         else:
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
