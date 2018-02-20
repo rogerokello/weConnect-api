@@ -80,5 +80,6 @@ class Review():
         self.business_id = business_id
 
     # add review object to database
+    @classmethod
     def add(self, a_review):
         reviews.append(a_review)

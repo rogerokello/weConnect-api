@@ -112,7 +112,7 @@ def create_app():
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
     #review a business given its ID in the url
-    @app.route('/businesses/<int:id>/reviews', methods=['PUT'])
+    @app.route('/businesses/<int:id>/reviews', methods=['POST'])
     def review_a_business_given_its_id(id):
 
         #check if the business is there
