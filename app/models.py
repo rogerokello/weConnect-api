@@ -55,4 +55,5 @@ class Business():
         if id is not None:
             businesses.pop(int(id))
             return id
-        else return None
+        else:
+            return None
