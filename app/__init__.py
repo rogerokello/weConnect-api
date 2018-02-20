@@ -150,7 +150,7 @@ def create_app():
         if Business.id_exists(id):
             # get all the reviews for this business currently available
             business_reviews = Review.get_all_business_reviews(id)
-            if len(current_business_reviews) > 0:
+            if len(business_reviews) > 0:
                 response = {
                     'Current business reviews are: ': business_reviews
                 }
