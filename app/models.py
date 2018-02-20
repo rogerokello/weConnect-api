@@ -43,3 +43,8 @@ class Business():
             return False
 
         return True
+
+    #Method to get biz by id
+    @classmethod
+    def get_by_id(self, id):
+        return businesses[id]
