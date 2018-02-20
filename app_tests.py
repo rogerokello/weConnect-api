@@ -38,6 +38,7 @@ class WeConnectApiTestCase(unittest.TestCase):
         with self.app.app_context():
             # delete database contents
             db.businesses.clear()
+            db.reviews.clear()
 
     def test_new_business_can_be_added(self):
         """Test the API can create a business (POST request)"""
