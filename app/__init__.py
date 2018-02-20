@@ -123,7 +123,7 @@ def create_app():
             #create review object
             a_review = Review(
                 review_summary = data['review_summary'],
-                review_description = data['review_description']
+                review_description = data['review_description'],
                 star_rating = data['star_rating'],
                 business_id = id
             )
@@ -139,7 +139,7 @@ def create_app():
             return make_response(jsonify(response)), 201
 
         else:
-            
+
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
     return app
