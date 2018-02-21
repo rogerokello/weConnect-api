@@ -113,7 +113,7 @@ class User():
     # method to add user to the datbase
     @classmethod
     def add(self, a_user):
-        users.add(a_user)
+        users.append(a_user)
 
     # method to find user by username
     @classmethod
