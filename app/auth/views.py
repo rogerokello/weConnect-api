@@ -51,6 +51,7 @@ class LoginView(MethodView):
 
 # Define the API resource
 registration_view = RegistrationView.as_view('registration_view')
+login_view = LoginView.as_view('login_view')
 
 # Define the rule for the registration url --->  /auth/register
 # Then add the rule to the blueprint
