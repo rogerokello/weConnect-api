@@ -9,6 +9,13 @@ class RegistrationView(MethodView):
 
     #handle post request for this view( url is auth/register)
     def post(self):
+
+        #get the json data sent over post as a dictionary
+        data = request.get_json()
+
+        # Query to see if the user already exists
+        user = User.get_by_username(username=data['username'])
+
     
 
 # Define the API resource
