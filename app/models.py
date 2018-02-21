@@ -143,3 +143,7 @@ class User():
     #loggin user and change login status to logged in
     def login_user(self):
         self.logged_in = True
+
+    #logout user and change login status
+    def logout_user(self):
+        self.logged_in = False
