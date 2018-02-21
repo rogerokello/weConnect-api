@@ -47,6 +47,40 @@ class RegistrationView(MethodView):
 
 class LoginView(MethodView):
     """This class-based view handles user login"""
+    def post(self):
+        #Handle POST request for this view. Url ---> /auth/login
+        """Endpoint to login a user"""
+        try:
+
+            #get the json data sent over post as a dictionary
+            data = request.get_json()
+
+            # Get the user object using their email (unique to every user)
+            user = User.get_by_username(username=data['username']):
+
+            # Try to authenticate the found user using their password
+            if user and user.check_password_is_valid(password=data['password']):
+                #valid username and password so generate success message
+                response = {
+                    'message': 'You logged in successfully.'
+                }
+                #make and send the response
+                return make_response(jsonify(response)), 200
+            else:
+                # User does not exist. Therefore, we return an error message
+                response = {
+                    'message': 'Invalid username, Please try again'
+                }
+                return make_response(jsonify(response)), 401
+
+        except Exception as e:
+            # Create a response containing an string error message
+            # incase an exception occurs
+            response = {
+                'message': str(e)
+            }
+            # Return a server error using the HTTP Error Code 500 (Internal Server Error)
+            return make_response(jsonify(response)), 500
     
 
 # Define the API resource
