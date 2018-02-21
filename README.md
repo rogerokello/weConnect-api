@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/rogerokello/weconnect-practice.svg?branch=dev-v1)](https://travis-ci.org/rogerokello/weconnect-practice) [![Coverage Status](https://coveralls.io/repos/github/rogerokello/weconnect-practice/badge.svg?branch=dev-v1)](https://coveralls.io/github/rogerokello/weconnect-practice?branch=dev-v1)
+[![Build Status](https://travis-ci.org/rogerokello/weconnect-practice.svg?branch=dev-v1)](https://travis-ci.org/rogerokello/weconnect-practice) [![Coverage Status](https://coveralls.io/repos/github/rogerokello/weconnect-practice/badge.svg?branch=dev-v1)](https://coveralls.io/github/rogerokello/weconnect-practice?branch=dev-v1) <a href="https://codeclimate.com/github/rogerokello/weconnect-practice/maintainability"><img src="https://api.codeclimate.com/v1/badges/203bec3842f23583461b/maintainability" /></a>
 </br>
 # weconnect api
 An api to enable you manage your business and reviews. Please visit a prototype at https://rogerokello.github.io/weconnect-practice/
