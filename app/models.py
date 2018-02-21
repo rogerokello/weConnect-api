@@ -103,3 +103,9 @@ class Review():
                 business_reviews.append(a_review)
         #return an object you can easily jsonify when sending back
         return business_reviews
+
+class User():
+    # create user object
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
