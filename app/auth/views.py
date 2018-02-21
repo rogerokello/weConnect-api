@@ -7,6 +7,10 @@ from app.models import User
 class RegistrationView(MethodView):
     """This class registers a new user."""
 
+    #handle post request for this view( url is auth/register)
+    def post(self):
+    
+
 # Define the API resource
 registration_view = RegistrationView.as_view('registration_view')
 
