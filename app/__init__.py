@@ -163,6 +163,8 @@ def create_app():
         else:
             return make_response(jsonify({'Message': 'Business was not found'})), 404
 
-
+    # import the authentication blueprint and register it on the app
+    from .auth import auth_blueprint
+    app.register_blueprint(auth_blueprint)
 
     return app
