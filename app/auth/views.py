@@ -13,8 +13,37 @@ class RegistrationView(MethodView):
         #get the json data sent over post as a dictionary
         data = request.get_json()
 
-        # Query to see if the user already exists
+        # Check to see if the user already exists
         user = User.get_by_username(username=data['username'])
+
+        if not user:
+            #user does not exist
+            try:
+                # Register the user
+                username = data['username']
+                password = data['password']
+                user = User(username=username, password=password)
+                User.add(user)
+
+                response = {
+                    'message': 'You registered successfully. Please log in.'
+                }
+                # return a response notifying the user that they registered successfully
+                return make_response(jsonify(response)), 201
+            except Exception as e:
+                # An error occured, therefore return a string message containing the error
+                response = {
+                    'message': str(e)
+                }
+                return make_response(jsonify(response)), 401
+        else:
+            # There is an existing user. We don't want to register users twice
+            # Return a message to the user telling them that they they already exist
+            response = {
+                'message': 'User already exists. Please login.'
+            }
+
+            return make_response(jsonify(response)), 202
 
     
 
