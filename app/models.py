@@ -1,4 +1,4 @@
-from .db import businesses, reviews
+from .db import businesses, reviews, users
 
 class Business(): 
     #initialise business   
@@ -109,3 +109,8 @@ class User():
     def __init__(self, username, password):
         self.username = username
         self.password = password
+
+    # method to add user to the datbase
+    @classmethod
+    def add(self, a_user):
+        users.add(a_user)
