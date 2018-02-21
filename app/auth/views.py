@@ -56,7 +56,7 @@ class LoginView(MethodView):
             data = request.get_json()
 
             # Get the user object using their email (unique to every user)
-            user = User.get_by_username(username=data['username']):
+            user = User.get_by_username(username=data['username'])
 
             # Try to authenticate the found user using their password
             if user and user.check_password_is_valid(password=data['password']):
