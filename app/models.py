@@ -139,3 +139,7 @@ class User():
             return True
         else:
             return False
+
+    #loggin user and change login status to logged in
+    def login_user(self):
+        self.logged_in = True
