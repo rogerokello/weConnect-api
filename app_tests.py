@@ -28,6 +28,12 @@ class WeConnectApiTestCase(unittest.TestCase):
                                 'review_description': 'I liked every thing about it',
                                 'star_rating' : '5'
                             }
+                            
+        #create a dict to be used to store user details
+        self.user_data = {
+            'username': 'roger',
+            'password': 'okello'
+        }
 
         #bind the app context
         with self.app.app_context():
@@ -151,17 +157,12 @@ class WeConnectApiTestCase(unittest.TestCase):
     def test_user_registration_works(self):
         """Test user registration works correcty."""
 
-        self.user_data = {
-            'username': 'roger',
-            'password': 'okello'
-        }
-
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
                                  data=json.dumps(self.user_data),
                                  content_type='application/json'
                                  )
-                                 
+        print(res)               
         # get the results returned in json format
         result = json.loads(res.data.decode())
 
