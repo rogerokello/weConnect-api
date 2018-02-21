@@ -17,10 +17,14 @@ class RegistrationView(MethodView):
             #check if nothing in json request
             if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)":
                 response = {
-                    "message": "Please supply both username and password"
+                    "message": "Please supply both username and password keys"
                 }
                 return make_response(jsonify(response)), 400
-
+            if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting ',' delimiter: line 3 column 2 (char 19)":
+                response = {
+                    "message": "Please supply both username and password values"
+                }
+                return make_response(jsonify(response)), 400
             response = {
                 "message": str(e)
             }
@@ -30,9 +34,15 @@ class RegistrationView(MethodView):
         try:
             username = data['username']
             password = data['password']
-        except KeyError:
+        except KeyError as missing_key:
             response = {
-                "message": "Please supply a username and password"
+                "message": "Please supply a " + str(missing_key)
+            }
+            return make_response(jsonify(response)), 400
+
+        if data['username'] == "" or data['password'] == "":
+            response = {
+                "message": "Please supply a values for both username and password"
             }
             return make_response(jsonify(response)), 400
 
@@ -59,6 +69,7 @@ class RegistrationView(MethodView):
                     'message': str(e)
                 }
                 return make_response(jsonify(response)), 401
+            
         else:
             # There is an existing user. We don't want to register users twice
             # Return a message to the user telling them that they they already exist
@@ -107,11 +118,20 @@ class LoginView(MethodView):
                 return make_response(jsonify(response)), 401
 
         except Exception as e:
+
+            #check if nothing in json request
+            if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)":
+                response = {
+                    "message": "Please supply both username and password"
+                }
+                return make_response(jsonify(response)), 400
+
             # Create a response containing an string error message
             # incase an exception occurs
             response = {
                 'message': str(e)
             }
+
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
             return make_response(jsonify(response)), 500
     
