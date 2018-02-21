@@ -55,7 +55,7 @@ class LoginView(MethodView):
             #get the json data sent over post as a dictionary
             data = request.get_json()
 
-            # Get the user object using their email (unique to every user)
+            # Get the user object using their user name
             user = User.get_by_username(username=data['username'])
 
             # Try to authenticate the found user using their password
