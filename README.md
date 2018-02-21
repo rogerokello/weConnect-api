@@ -1,4 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/rogerokello/weconnect-practice/badge.svg?branch=dev-v1)](https://coveralls.io/github/rogerokello/weconnect-practice?branch=dev-v1)
+</br>
 # weconnect api
 An api to enable you manage your business and reviews. Please visit a prototype at https://rogerokello.github.io/weconnect-practice/
 
