@@ -68,7 +68,7 @@ class LoginView(MethodView):
                     #make and send the response
                     return make_response(jsonify(response)), 303
                 else:
-                    login_user()
+                    user.login_user()
 
                 #valid username and password so generate success message
                 response = {
