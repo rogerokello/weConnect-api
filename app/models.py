@@ -132,3 +132,10 @@ class User():
             return True
         else:
             return False
+
+    #check if user already logged in
+    def check_already_logged_in():
+        if self.logged_in:
+            return True
+        else:
+            return False
