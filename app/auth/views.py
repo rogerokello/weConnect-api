@@ -11,7 +11,30 @@ class RegistrationView(MethodView):
     def post(self):
 
         #get the json data sent over post as a dictionary
-        data = request.get_json()
+        try:
+            data = request.get_json()
+        except Exception as e:
+            #check if nothing in json request
+            if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)":
+                response = {
+                    "message": "Please supply both username and password"
+                }
+                return make_response(jsonify(response)), 400
+
+            response = {
+                "message": str(e)
+            }
+            return make_response(jsonify(response)), 400
+        
+        #ensure that a username and password are provided
+        try:
+            username = data['username']
+            password = data['password']
+        except KeyError:
+            response = {
+                "message": "Please supply a username and password"
+            }
+            return make_response(jsonify(response)), 400
 
         # Check to see if the user already exists
         user = User.get_by_username(username=data['username'])
