@@ -172,5 +172,29 @@ class WeConnectApiTestCase(unittest.TestCase):
                         "You registered successfully. Please log in.")
         self.assertEqual(res.status_code, 201)
 
+    def test_user_login_works(self):
+        """Test registered user can login."""
+        #first register a user
+        self.client().post('/auth/register',
+                                 data=json.dumps(self.user_data),
+                                 content_type='application/json'
+                            )
+        
+        #try to login using registration credentials
+        login_res = self.client().post('/auth/login',
+                                        data=json.dumps(self.user_data),
+                                        content_type='application/json'
+                                        )
+
+        # get the results in json format
+        result = json.loads(login_res.data.decode())
+
+        # Test that the response contains success message
+        self.assertEqual(result['message'], "You logged in successfully.")
+
+        # Assert that the status code returned is equal to 200
+        self.assertEqual(login_res.status_code, 200)
+
+
 if __name__ == "__main__":
     unittest.main()
