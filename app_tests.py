@@ -148,5 +148,23 @@ class WeConnectApiTestCase(unittest.TestCase):
         # check that Good stuff string in returned json response
         self.assertIn('Good stuff', str(response.data))
 
+    def test_user_registration_works(self):
+        """Test user registration works correcty."""
+
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                 data=json.dumps(self.user_data),
+                                 content_type='application/json'
+                                 )
+                                 
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "You registered successfully. Please log in.")
+        self.assertEqual(res.status_code, 201)
+
 if __name__ == "__main__":
     unittest.main()
