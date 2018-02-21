@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rogerokello/weconnect-practice.svg?branch=dev-v1)](https://travis-ci.org/rogerokello/weconnect-practice)
+
 [![Coverage Status](https://coveralls.io/repos/github/rogerokello/weconnect-practice/badge.svg?branch=dev-v1)](https://coveralls.io/github/rogerokello/weconnect-practice?branch=dev-v1)
 </br>
 # weconnect api
