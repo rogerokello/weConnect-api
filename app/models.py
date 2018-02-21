@@ -114,3 +114,12 @@ class User():
     @classmethod
     def add(self, a_user):
         users.add(a_user)
+
+    # method to find user by username
+    @classmethod
+    def get_by_username(self, username):
+        for user in users:
+            if user.username == username:
+                return user
+
+        return False
