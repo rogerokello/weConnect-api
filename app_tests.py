@@ -151,6 +151,11 @@ class WeConnectApiTestCase(unittest.TestCase):
     def test_user_registration_works(self):
         """Test user registration works correcty."""
 
+        self.user_data = {
+            'username': 'roger',
+            'password': 'okello'
+        }
+
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
                                  data=json.dumps(self.user_data),
