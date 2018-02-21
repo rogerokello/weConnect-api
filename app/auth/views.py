@@ -60,6 +60,14 @@ class LoginView(MethodView):
 
             # Try to authenticate the found user using their password
             if user and user.check_password_is_valid(password=data['password']):
+                #check if user is already logged in
+                if user.check_already_logged_in():
+                    response = {
+                        'message': 'No need you are already logged in'
+                    }
+                    #make and send the response
+                    return make_response(jsonify(response)), 303
+
                 #valid username and password so generate success message
                 response = {
                     'message': 'You logged in successfully.'
