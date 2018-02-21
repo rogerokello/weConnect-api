@@ -123,3 +123,10 @@ class User():
                 return user
 
         return False
+    
+    #check if password is valid
+    def check_password_is_valid(self, password):
+        if self.password == password:
+            return True
+        else:
+            return False
