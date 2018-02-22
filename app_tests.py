@@ -57,6 +57,17 @@ class WeConnectApiTestCase(unittest.TestCase):
                                  data=json.dumps(self.user_data),
                                  content_type='application/json'
                                  )
+    
+    def login_user(self, username="roger", password="okello"):
+        """This helper method helps log in a test user."""
+        user_data = {
+            'username': username,
+            'password': password
+        }
+        return self.client().post('/auth/login',
+                                        data=json.dumps(self.user_data),
+                                        content_type='application/json'
+                                )
 
     def test_new_business_can_be_added(self):
         """Test the API can create a business (POST request)"""
