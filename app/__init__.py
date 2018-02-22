@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, current_app
 from . import db
 from config import config
 
