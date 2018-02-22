@@ -179,13 +179,13 @@ class WeConnectApiTestCase(unittest.TestCase):
 
         # first add a business
         self.client().post('/businesses',
-                            headers=dict(Authorization="Bearer " + access_token)
+                            headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business),
                             content_type='application/json')
 
         # Edit business 
         response = self.client().put('/businesses/0',
-                            headers=dict(Authorization="Bearer " + access_token)
+                            headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.edited_business),
                             content_type='application/json')
 
@@ -205,13 +205,13 @@ class WeConnectApiTestCase(unittest.TestCase):
 
         #first create a business
         self.client().post('/businesses',
-                            headers=dict(Authorization="Bearer " + access_token)
+                            headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business),
                             content_type='application/json')
 
         #make the review
         response = self.client().post('/businesses/0/reviews',
-                            headers=dict(Authorization="Bearer " + access_token)
+                            headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business_review),
                             content_type='application/json')
 
@@ -232,13 +232,13 @@ class WeConnectApiTestCase(unittest.TestCase):
 
         #first create a business
         self.client().post('/businesses',
-                            headers=dict(Authorization="Bearer " + access_token)
+                            headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business),
                             content_type='application/json')
 
         #make the review
         self.client().post('/businesses/0/reviews',
-                            headers=dict(Authorization="Bearer " + access_token)
+                            headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business_review),
                             content_type='application/json')
 
