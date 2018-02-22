@@ -20,6 +20,7 @@ class RegistrationView(MethodView):
                     "message": "Please supply both username and password keys"
                 }
                 return make_response(jsonify(response)), 400
+            #check if empty strings sent with request
             if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting ',' delimiter: line 3 column 2 (char 19)":
                 response = {
                     "message": "Please supply both username and password values"
