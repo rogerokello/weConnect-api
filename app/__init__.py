@@ -3,6 +3,13 @@ from . import db
 
 def create_app():
     app = Flask(__name__)
+
+    #get configuration settings to app
+    app.config.from_object(config[config_name])
+
+    #apply the configuration settings on app
+    config[config_name].init_app(app)
+    
     from .models import Business, Review
     from flask import request, jsonify, make_response
 
