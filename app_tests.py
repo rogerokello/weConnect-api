@@ -6,7 +6,7 @@ class WeConnectApiTestCase(unittest.TestCase):
 
     def setUp(self):
         #create app using the flask import
-        self.app = create_app()
+        self.app = create_app('testing')
 
         #create a test client
         self.client = self.app.test_client
