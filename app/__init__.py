@@ -61,20 +61,30 @@ def create_app(config_name):
     @app.route('/businesses/<int:id>', methods=['GET'])
     def get_a_business_by_id(id):
 
-        #check if business is there
-        if Business.id_exists(id):
-
-            found_business = Business.get_by_id(id)
-            business_as_a_dict = {
-                'id': id,
-                'name': found_business.name,
-                'category': found_business.category,
-                'location': found_business.location
-            }
-
-            return make_response(jsonify({'Business found': business_as_a_dict})), 201
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
         else:
-            return make_response(jsonify({'Message': 'Business was not found'})), 404
+            auth_token = ''
+        
+        if auth_token:
+            #check if business is there
+            if Business.id_exists(id):
+
+                found_business = Business.get_by_id(id)
+                business_as_a_dict = {
+                    'id': id,
+                    'name': found_business.name,
+                    'category': found_business.category,
+                    'location': found_business.location
+                }
+
+                return make_response(jsonify({'Business found': business_as_a_dict})), 201
+            else:
+                return make_response(jsonify({'Message': 'Business was not found'})), 404
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
 
     #route to delete a business by ID
     @app.route('/businesses/<int:id>', methods=['DELETE'])
