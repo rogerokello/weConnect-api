@@ -47,6 +47,17 @@ class WeConnectApiTestCase(unittest.TestCase):
             db.reviews.clear()
             db.users.clear()
 
+    def register_user(self, username="roger", password="okello"):
+        """This helper method helps register a test user."""
+        user_data = {
+            'username': username,
+            'password': password
+        }
+        return self.client().post('/auth/register',
+                                 data=json.dumps(self.user_data),
+                                 content_type='application/json'
+                                 )
+
     def test_new_business_can_be_added(self):
         """Test the API can create a business (POST request)"""
         
