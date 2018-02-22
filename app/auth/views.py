@@ -95,6 +95,19 @@ class LoginView(MethodView):
 
             # Try to authenticate the found user using their password
             if user and user.check_password_is_valid(password=data['password']):
+                
+                # Generate the access token. This will be used as
+                # the authorization header
+                access_token = user.generate_token(user.get_user_id())
+                if access_token:
+                    response = {
+                        'message': 'You logged in successfully.',
+                        'access_token': access_token.decode()# The token is
+                        # a string so decode will not work until you pass it
+                        # into decode_token from the user model
+                    }
+                    return make_response(jsonify(response)), 200
+                
                 #check if user is already logged in
                 if user.check_already_logged_in():
                     response = {
@@ -105,12 +118,6 @@ class LoginView(MethodView):
                 else:
                     user.login_user()
 
-                #valid username and password so generate success message
-                response = {
-                    'message': 'You logged in successfully.'
-                }
-                #make and send the response
-                return make_response(jsonify(response)), 200
             else:
                 # User does not exist. Therefore, we return an error message
                 response = {
