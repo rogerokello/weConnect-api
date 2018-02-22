@@ -97,6 +97,10 @@ class WeConnectApiTestCase(unittest.TestCase):
         self.assertIn('Xedrox', str(response.data))
 
     def test_api_can_get_business_by_id(self):
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        
         # first add a business
         self.client().post('/businesses', 
                                 data=json.dumps(self.a_business),
