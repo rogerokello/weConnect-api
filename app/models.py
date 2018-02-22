@@ -131,7 +131,7 @@ class User():
         return False
 
     #method to return user id
-    def get_user_id():
+    def get_user_id(self):
         for id, user in enumerate(users):
             if user.username == self.username:
                 return id
