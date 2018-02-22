@@ -69,18 +69,24 @@ class WeConnectApiTestCase(unittest.TestCase):
                                         content_type='application/json'
                                 )
 
-    def test_new_business_can_be_added(self):
-        """Test the API can create a business (POST request)"""
-        # register a test user, then log them in
+    # helper method to get access token
+    def get_token(self):
+        #register user first
         self.register_user()
+
+        #login user
         result = self.login_user()
 
-        # obtain the access token
+        # obtain the access token from result
         access_token = json.loads(result.data.decode())['access_token']
+        
+        return access_token
 
+    def test_new_business_can_be_added(self):
+        """Test the API can create a business (POST request)"""
         
         response = self.client().post('/businesses',
-                                headers=dict(Authorization="Bearer " + access_token),
+                                headers=dict(Authorization="Bearer " + self.get_token()),
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
 
