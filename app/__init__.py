@@ -17,28 +17,40 @@ def create_app(config_name):
     #Route to register a new business
     @app.route('/businesses', methods=['POST'])
     def register_a_business():
-        #tranform json data got into a dictionary
-        data = request.get_json()
 
-        #extract data from each of the dictionary
-        #values
-        name = data['name']
-        category = data['category']
-        location = data['location']
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
+        else:
+            auth_token = ''
+        
+        if auth_token:
 
-        #create a business object
-        a_business = Business(name=name,
-                                category=category,
-                                location=location)
+            #tranform json data got into a dictionary
+            data = request.get_json()
 
-        #add business to the non-persistent database
-        Business.add(a_business)
+            #extract data from each of the dictionary
+            #values
+            name = data['name']
+            category = data['category']
+            location = data['location']
 
-        message = "Created business: " + a_business.name + "successfuly"
-        response = {
-            'message': message
-        }
-        return make_response(jsonify(response)), 201
+            #create a business object
+            a_business = Business(name=name,
+                                    category=category,
+                                    location=location)
+
+            #add business to the non-persistent database
+            Business.add(a_business)
+
+            message = "Created business: " + a_business.name + "successfuly"
+            response = {
+                'message': message
+            }
+            return make_response(jsonify(response)), 201
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
 
     # route to get all businesses
     @app.route('/businesses', methods=['GET'])
