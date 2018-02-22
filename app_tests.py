@@ -100,7 +100,10 @@ class WeConnectApiTestCase(unittest.TestCase):
         # register a test user, then log them in
         self.register_user()
         result = self.login_user()
-        
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
         # first add a business
         self.client().post('/businesses', 
                                 data=json.dumps(self.a_business),
