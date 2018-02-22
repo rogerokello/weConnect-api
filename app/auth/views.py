@@ -142,11 +142,48 @@ class LoginView(MethodView):
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
             return make_response(jsonify(response)), 500
+
+class LogoutView(MethodView):
+    """This class-based view handles user logout"""
+    def post(self):
+        #Handle POST request for this view. Url ---> /auth/logout
+        """Endpoint to logout a user"""
+        try:
+            # get auth token
+            auth_header = request.headers.get('Authorization')
+
+            if auth_header:
+                auth_token = auth_header.split(" ")[1]
+            else:
+                auth_token = ''
+        
+            if auth_token:
+                if not user.check_already_logged_in():
+                    response = {
+                        'message': 'No need you are already logged out'
+                    }
+                    #make and send the response
+                    return make_response(jsonify(response)), 303
+                else:
+                    #log out user if not already logged out
+                    user.logout_user()
+            else:
+                return make_response(jsonify({'Token Error': "Token required"})), 499
+
+        except Exception as e:
+
+            response = {
+                'message': str(e)
+            }
+
+            # Return a server error using the HTTP Error Code 500 (Internal Server Error)
+            return make_response(jsonify(response)), 500
     
 
 # Define the API resource
 registration_view = RegistrationView.as_view('registration_view')
 login_view = LoginView.as_view('login_view')
+logout_view = LogoutView.as_view('logout_view')
 
 # Define the rule for the registration url --->  /auth/register
 # Then add the rule to the blueprint
@@ -160,4 +197,11 @@ auth_blueprint.add_url_rule(
 auth_blueprint.add_url_rule(
     '/auth/login',
     view_func=login_view,
+    methods=['POST'])
+
+# Define the rule for the logout url --->  /auth/logout
+# Then add the rule to the blueprint
+auth_blueprint.add_url_rule(
+    '/auth/logout',
+    view_func=logout_view,
     methods=['POST'])
