@@ -105,11 +105,14 @@ class WeConnectApiTestCase(unittest.TestCase):
         access_token = json.loads(result.data.decode())['access_token']
 
         # first add a business
-        self.client().post('/businesses', 
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
 
-        response = self.client().get('/businesses/0')
+        response = self.client().get('/businesses/0',
+                                    headers=dict(Authorization="Bearer " + access_token)
+                                )
 
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
