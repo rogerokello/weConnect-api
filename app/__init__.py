@@ -55,19 +55,31 @@ def create_app(config_name):
     # route to get all businesses
     @app.route('/businesses', methods=['GET'])
     def get_all_businesses():
-        # get all the businesses currently available
-        current_businesses = Business.get_all()
 
-        if len(current_businesses) > 0:
-            response = {
-                'Your current businesses are: ': current_businesses
-            }
-            return make_response(jsonify(response)), 201
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
         else:
-            response = {
-                'Message: ': 'Sorry currently no businesses are present'
-            }
-            return make_response(jsonify(response)), 404
+            auth_token = ''
+        
+        if auth_token:
+            # get all the businesses currently available
+            current_businesses = Business.get_all()
+
+            if len(current_businesses) > 0:
+                response = {
+                    'Your current businesses are: ': current_businesses
+                }
+                return make_response(jsonify(response)), 201
+            else:
+                response = {
+                    'Message: ': 'Sorry currently no businesses are present'
+                }
+                return make_response(jsonify(response)), 404
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
+
 
     # route to get a business by ID
     @app.route('/businesses/<int:id>', methods=['GET'])
@@ -102,96 +114,136 @@ def create_app(config_name):
     @app.route('/businesses/<int:id>', methods=['DELETE'])
     def delete_a_business_by_id(id):
 
-        #check if business is there
-        if Business.id_exists(id):
-            
-            #invoke delete method of business class
-            Business.delete(id)
-
-            return make_response(jsonify({'Message': 'Business deleted'})), 201
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
         else:
-            return make_response(jsonify({'Message': 'Business was not found'})), 404
+            auth_token = ''
+        
+        if auth_token:
+            #check if business is there
+            if Business.id_exists(id):
+                
+                #invoke delete method of business class
+                Business.delete(id)
+
+                return make_response(jsonify({'Message': 'Business deleted'})), 201
+            else:
+                return make_response(jsonify({'Message': 'Business was not found'})), 404
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
 
     #route to update a business by ID
     @app.route('/businesses/<int:id>', methods=['PUT'])
     def update_a_business_given_its_id(id):
 
-        #check if business is there
-        if Business.id_exists(id):
-            # get the data that was sent in the request
-            data = request.get_json()
-            
-            #invoke delete method of business class
-            update_status = Business.update(id = id,
-                                            name = data['name'],
-                                            category = data['category'],
-                                            location = data['location'])
-            if update_status:
-                return make_response(
-                    jsonify(
-                        {'Message': 'Business updated to' + data['name']}
-                    )
-                ), 201
-            else:
-                return make_response(
-                    jsonify(
-                        {'Message': 'Failed to update business'}
-                    )
-                ), 500
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
         else:
-            return make_response(jsonify({'Message': 'Business was not found'})), 404
+            auth_token = ''
+        
+        if auth_token:
+            #check if business is there
+            if Business.id_exists(id):
+                # get the data that was sent in the request
+                data = request.get_json()
+                
+                #invoke delete method of business class
+                update_status = Business.update(id = id,
+                                                name = data['name'],
+                                                category = data['category'],
+                                                location = data['location'])
+                if update_status:
+                    return make_response(
+                        jsonify(
+                            {'Message': 'Business updated to' + data['name']}
+                        )
+                    ), 201
+                else:
+                    return make_response(
+                        jsonify(
+                            {'Message': 'Failed to update business'}
+                        )
+                    ), 500
+            else:
+                return make_response(jsonify({'Message': 'Business was not found'})), 404
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
 
     #review a business given its ID in the url
     @app.route('/businesses/<int:id>/reviews', methods=['POST'])
     def review_a_business_given_its_id(id):
 
-        #check if the business is there
-        if Business.id_exists(id):
-            # get the data that was sent in the request
-            data = request.get_json()
-
-            #create review object
-            a_review = Review(
-                review_summary = data['review_summary'],
-                review_description = data['review_description'],
-                star_rating = data['star_rating'],
-                business_id = id
-            )
-
-            #add review to the database
-            Review.add(a_review)
-
-            message = "Created review: " + a_review.review_summary + "successfuly"
-            response = {
-                'message': message
-            }
-
-            return make_response(jsonify(response)), 201
-
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
         else:
+            auth_token = ''
+        
+        if auth_token:
+            #check if the business is there
+            if Business.id_exists(id):
+                # get the data that was sent in the request
+                data = request.get_json()
 
-            return make_response(jsonify({'Message': 'Business was not found'})), 404
+                #create review object
+                a_review = Review(
+                    review_summary = data['review_summary'],
+                    review_description = data['review_description'],
+                    star_rating = data['star_rating'],
+                    business_id = id
+                )
+
+                #add review to the database
+                Review.add(a_review)
+
+                message = "Created review: " + a_review.review_summary + "successfuly"
+                response = {
+                    'message': message
+                }
+
+                return make_response(jsonify(response)), 201
+
+            else:
+
+                return make_response(jsonify({'Message': 'Business was not found'})), 404
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
 
     #get all business reviews
     @app.route('/businesses/<int:id>/reviews', methods=['GET'])
     def get_business_reviews_given_its_id(id):
 
-        #check if the business is there
-        if Business.id_exists(id):
-            # get all the reviews for this business currently available
-            business_reviews = Review.get_all_business_reviews(id)
-            if len(business_reviews) > 0:
-                response = {
-                    'Current business reviews are: ': business_reviews
-                }
-                return make_response(jsonify(response)), 201
-            else:
-                response = {
-                    'Message: ': 'Sorry currently no reviews are present'
-                }
-                return make_response(jsonify(response)), 404
+        # get auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
         else:
-            return make_response(jsonify({'Message': 'Business was not found'})), 404
+            auth_token = ''
+        
+        if auth_token:
+            #check if the business is there
+            if Business.id_exists(id):
+                # get all the reviews for this business currently available
+                business_reviews = Review.get_all_business_reviews(id)
+                if len(business_reviews) > 0:
+                    response = {
+                        'Current business reviews are: ': business_reviews
+                    }
+                    return make_response(jsonify(response)), 201
+                else:
+                    response = {
+                        'Message: ': 'Sorry currently no reviews are present'
+                    }
+                    return make_response(jsonify(response)), 404
+            else:
+                return make_response(jsonify({'Message': 'Business was not found'})), 404
+        else:
+            return make_response(jsonify({'Token Error': "Token required"})), 499
 
     # import the authentication blueprint and register it on the app
     from .auth import auth_blueprint
