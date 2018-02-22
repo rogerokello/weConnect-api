@@ -129,6 +129,13 @@ class User():
                 return user
 
         return False
+
+    #method to return user id
+    def get_user_id():
+        for id, user in enumerate(users):
+            if user.username == self.username:
+                return id
+        return None
     
     #check if password is valid
     def check_password_is_valid(self, password):
