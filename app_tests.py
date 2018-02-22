@@ -196,6 +196,9 @@ class WeConnectApiTestCase(unittest.TestCase):
         # Assert that the status code returned is equal to 200
         self.assertEqual(login_res.status_code, 200)
 
+        # Assert that the result has an access token
+        self.assertTrue(result['access_token'])
+
 
 if __name__ == "__main__":
     unittest.main()
