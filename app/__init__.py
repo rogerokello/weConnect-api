@@ -11,7 +11,7 @@ def create_app(config_name):
     #apply the configuration settings on app
     config[config_name].init_app(app)
 
-    from .models import Business, Review
+    from .models import Business, Review, User
     from flask import request, jsonify, make_response
 
     #Route to register a new business
@@ -27,28 +27,39 @@ def create_app(config_name):
         
         if auth_token:
 
-            #tranform json data got into a dictionary
-            data = request.get_json()
+            # Attempt to decode the token sent and get the User ID
+            user_id = User.decode_token(auth_token)
 
-            #extract data from each of the dictionary
-            #values
-            name = data['name']
-            category = data['category']
-            location = data['location']
+            #try to see if you can get a user by a token
+            # they are identified with
+            if User.get_user_by_token(auth_token) is not None:
 
-            #create a business object
-            a_business = Business(name=name,
-                                    category=category,
-                                    location=location)
+                #tranform json data got into a dictionary
+                data = request.get_json()
 
-            #add business to the non-persistent database
-            Business.add(a_business)
+                #extract data from each of the dictionary
+                #values
+                name = data['name']
+                category = data['category']
+                location = data['location']
 
-            message = "Created business: " + a_business.name + "successfuly"
-            response = {
-                'message': message
-            }
-            return make_response(jsonify(response)), 201
+                #create a business object
+                a_business = Business(name=name,
+                                        category=category,
+                                        location=location)
+
+                #add business to the non-persistent database
+                Business.add(a_business)
+
+                message = "Created business: " + a_business.name + "successfuly"
+                response = {
+                    'message': message
+                }
+                return make_response(jsonify(response)), 201
+            else:
+                return make_response(jsonify(
+                                    {'Token Error': "Invalid Token"}
+                        )), 499
         else:
             return make_response(jsonify({'Token Error': "Token required"})), 499
 
