@@ -83,5 +83,5 @@ An api to enable you manage your business and reviews. Please visit a prototype 
 6. Run your tests from the terminal like this to see how many have passed
 
     ```
-        $ python app_tests.py
+        $ python manage.py test
     ```
