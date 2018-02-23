@@ -135,6 +135,16 @@ class LoginView(MethodView):
                     "message": "Please supply both username and password"
                 }
                 return make_response(jsonify(response)), 400
+            
+            #check if username or password is not supplied
+            if str(e) == "'username'" or str(e) == "'password'":
+                response = {
+                    'message': "Please supply a " + str(e)
+                }
+
+            # Return a server error using the HTTP Error Code 400 (Bad request)
+            return make_response(jsonify(response)), 400
+
 
             # Create a response containing an string error message
             # incase an exception occurs
