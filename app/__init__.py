@@ -150,15 +150,24 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token:
-            #check if business is there
-            if Business.id_exists(id):
-                
-                #invoke delete method of business class
-                Business.delete(id)
 
-                return make_response(jsonify({'Message': 'Business deleted'})), 201
+            #try to see if you can get a user by a token
+            # they are identified with
+            if User.get_user_by_token(auth_token) is not None:
+
+                #check if business is there
+                if Business.id_exists(id):
+                    
+                    #invoke delete method of business class
+                    Business.delete(id)
+
+                    return make_response(jsonify({'Message': 'Business deleted'})), 201
+                else:
+                    return make_response(jsonify({'Message': 'Business was not found'})), 404
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                                    {'Token Error': "Invalid Token"}
+                        )), 499            
         else:
             return make_response(jsonify({'Token Error': "Token required"})), 499
 
