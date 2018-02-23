@@ -75,19 +75,28 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token:
-            # get all the businesses currently available
-            current_businesses = Business.get_all()
 
-            if len(current_businesses) > 0:
-                response = {
-                    'Your current businesses are: ': current_businesses
-                }
-                return make_response(jsonify(response)), 201
+            #try to see if you can get a user by a token
+            # they are identified with
+            if User.get_user_by_token(auth_token) is not None:
+
+                # get all the businesses currently available
+                current_businesses = Business.get_all()
+
+                if len(current_businesses) > 0:
+                    response = {
+                        'Your current businesses are: ': current_businesses
+                    }
+                    return make_response(jsonify(response)), 201
+                else:
+                    response = {
+                        'Message: ': 'Sorry currently no businesses are present'
+                    }
+                    return make_response(jsonify(response)), 404
             else:
-                response = {
-                    'Message: ': 'Sorry currently no businesses are present'
-                }
-                return make_response(jsonify(response)), 404
+                return make_response(jsonify(
+                                    {'Token Error': "Invalid Token"}
+                        )), 499            
         else:
             return make_response(jsonify({'Token Error': "Token required"})), 499
 
@@ -104,20 +113,28 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token:
-            #check if business is there
-            if Business.id_exists(id):
 
-                found_business = Business.get_by_id(id)
-                business_as_a_dict = {
-                    'id': id,
-                    'name': found_business.name,
-                    'category': found_business.category,
-                    'location': found_business.location
-                }
+            #try to see if you can get a user by a token
+            # they are identified with
+            if User.get_user_by_token(auth_token) is not None:
+                #check if business is there
+                if Business.id_exists(id):
 
-                return make_response(jsonify({'Business found': business_as_a_dict})), 201
+                    found_business = Business.get_by_id(id)
+                    business_as_a_dict = {
+                        'id': id,
+                        'name': found_business.name,
+                        'category': found_business.category,
+                        'location': found_business.location
+                    }
+
+                    return make_response(jsonify({'Business found': business_as_a_dict})), 201
+                else:
+                    return make_response(jsonify({'Message': 'Business was not found'})), 404
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                                    {'Token Error': "Invalid Token"}
+                        )), 499 
         else:
             return make_response(jsonify({'Token Error': "Token required"})), 499
 
