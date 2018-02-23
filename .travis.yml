@@ -4,6 +4,7 @@ python:
 install: pip install -r requirements.txt
 
 script:
-   - coverage run app_tests.py
+  #- coverage run app_tests.py
+  - coverage run manage.py test
    
 after_success: coveralls
