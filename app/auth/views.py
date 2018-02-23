@@ -106,6 +106,10 @@ class LoginView(MethodView):
                         # a string so decode will not work until you pass it
                         # into decode_token from the user model
                     }
+
+                    #change the login state
+                    user.login_user()
+                    #return a successful response
                     return make_response(jsonify(response)), 200
                 
                 #check if user is already logged in
@@ -115,8 +119,6 @@ class LoginView(MethodView):
                     }
                     #make and send the response
                     return make_response(jsonify(response)), 303
-                else:
-                    user.login_user()
 
             else:
                 # User does not exist. Therefore, we return an error message
@@ -158,15 +160,23 @@ class LogoutView(MethodView):
                 auth_token = ''
         
             if auth_token:
-                if not user.check_already_logged_in():
+                a_user = User.get_user_by_token(auth_token)
+                if a_user.check_already_logged_in():
+                    #log out user if logged in
+                    a_user.logout_user()
+                    response = {
+                        'message': 'Logout Successful'
+                    }
+                    #make and send the response
+                    return make_response(jsonify(response)), 201
+                else:
+                    #log out user if not already logged out
                     response = {
                         'message': 'No need you are already logged out'
                     }
+                    
                     #make and send the response
                     return make_response(jsonify(response)), 303
-                else:
-                    #log out user if not already logged out
-                    user.logout_user()
             else:
                 return make_response(jsonify({'Token Error': "Token required"})), 499
 

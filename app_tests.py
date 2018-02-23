@@ -294,6 +294,19 @@ class WeConnectApiTestCase(unittest.TestCase):
         # Assert that the result has an access token
         self.assertTrue(result['access_token'])
 
+    def test_user_logout_works(self):
+        """Test the API can logout a user"""
+        
+        response = self.client().post('/auth/logout',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                content_type='application/json')
+
+        # check that Logout Successful string in returned json response
+        self.assertIn('Logout Successful', str(response.data))
+        
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
 
 if __name__ == "__main__":
     unittest.main()

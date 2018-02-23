@@ -194,3 +194,10 @@ class User():
         except jwt.InvalidTokenError:
             # the token is invalid, return an error string
             return "Invalid token. Please register or login"
+
+    @classmethod
+    def get_user_by_token(self, token):
+        for counter, user in enumerate(users):
+            if str(counter) == str(user.decode_token(token)):
+                return user
+        return None
