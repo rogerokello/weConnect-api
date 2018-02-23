@@ -1,0 +1,3 @@
+businesses = []
+reviews = []
+users = []

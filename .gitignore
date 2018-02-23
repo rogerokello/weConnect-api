@@ -1,0 +1,7 @@
+designs/
+docs/
+LICENSE
+venv/
+app/__pycache__/
+app/auth/__pycache__/
+__pycache__/
