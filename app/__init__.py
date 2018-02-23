@@ -277,22 +277,29 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token:
-            #check if the business is there
-            if Business.id_exists(id):
-                # get all the reviews for this business currently available
-                business_reviews = Review.get_all_business_reviews(id)
-                if len(business_reviews) > 0:
-                    response = {
-                        'Current business reviews are: ': business_reviews
-                    }
-                    return make_response(jsonify(response)), 201
+            #try to see if you can get a user by a token
+            # they are identified with
+            if User.get_user_by_token(auth_token) is not None:
+                #check if the business is there
+                if Business.id_exists(id):
+                    # get all the reviews for this business currently available
+                    business_reviews = Review.get_all_business_reviews(id)
+                    if len(business_reviews) > 0:
+                        response = {
+                            'Current business reviews are: ': business_reviews
+                        }
+                        return make_response(jsonify(response)), 201
+                    else:
+                        response = {
+                            'Message: ': 'Sorry currently no reviews are present'
+                        }
+                        return make_response(jsonify(response)), 404
                 else:
-                    response = {
-                        'Message: ': 'Sorry currently no reviews are present'
-                    }
-                    return make_response(jsonify(response)), 404
+                    return make_response(jsonify({'Message': 'Business was not found'})), 404
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                                    {'Token Error': "Invalid Token"}
+                        )), 499
         else:
             return make_response(jsonify({'Token Error': "Token required"})), 499
 
