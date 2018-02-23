@@ -229,32 +229,39 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token:
-            #check if the business is there
-            if Business.id_exists(id):
-                # get the data that was sent in the request
-                data = request.get_json()
+            #try to see if you can get a user by a token
+            # they are identified with
+            if User.get_user_by_token(auth_token) is not None:
+                #check if the business is there
+                if Business.id_exists(id):
+                    # get the data that was sent in the request
+                    data = request.get_json()
 
-                #create review object
-                a_review = Review(
-                    review_summary = data['review_summary'],
-                    review_description = data['review_description'],
-                    star_rating = data['star_rating'],
-                    business_id = id
-                )
+                    #create review object
+                    a_review = Review(
+                        review_summary = data['review_summary'],
+                        review_description = data['review_description'],
+                        star_rating = data['star_rating'],
+                        business_id = id
+                    )
 
-                #add review to the database
-                Review.add(a_review)
+                    #add review to the database
+                    Review.add(a_review)
 
-                message = "Created review: " + a_review.review_summary + "successfuly"
-                response = {
-                    'message': message
-                }
+                    message = "Created review: " + a_review.review_summary + "successfuly"
+                    response = {
+                        'message': message
+                    }
 
-                return make_response(jsonify(response)), 201
+                    return make_response(jsonify(response)), 201
 
+                else:
+
+                    return make_response(jsonify({'Message': 'Business was not found'})), 404
             else:
-
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                                    {'Token Error': "Invalid Token"}
+                        )), 499
         else:
             return make_response(jsonify({'Token Error': "Token required"})), 499
 
