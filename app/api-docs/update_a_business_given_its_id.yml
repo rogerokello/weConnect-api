@@ -1,0 +1,52 @@
+Endpoint to update business information using an id value
+---
+tags:
+  - Business
+parameters:
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+  - name: id
+    description: The unique id of the business
+    type: string
+    in: path
+    required: true
+
+responses:
+  201:
+    description: Business detail update successful
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string
+  404:
+    description: No businesses found
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string
+          enum:
+            - "Business was not found"
+  499:
+    description: A token error, invalid token or missing token
+    schema: 
+      type: object
+      properties:
+        Token Error:
+          type: string
+          enum:
+            - "Invalid Token"
+            - "Token required"
+  500:
+    description: An unknown internal server error
+    schema: 
+      type: object
+      properties:
+        Message:
+          type: string
+          enum:
+            - "Failed to update business"

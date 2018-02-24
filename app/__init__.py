@@ -213,6 +213,7 @@ def create_app(config_name):
 
     #route to update a business by ID
     @app.route('/businesses/<int:id>', methods=['PUT'])
+    @swag_from('./api-docs/update_a_business_given_its_id.yml')
     def update_a_business_given_its_id(id):
 
         # get auth token
