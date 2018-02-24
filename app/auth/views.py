@@ -160,6 +160,7 @@ class LoginView(MethodView):
 
 class LogoutView(MethodView):
     """This class-based view handles user logout"""
+    @swag_from('../api-docs/logout_a_user.yml')
     def post(self):
         #Handle POST request for this view. Url ---> /auth/logout
         """Endpoint to logout a user"""
