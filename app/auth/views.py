@@ -84,6 +84,7 @@ class RegistrationView(MethodView):
 
 class LoginView(MethodView):
     """This class-based view handles user login"""
+    @swag_from('../api-docs/login_a_user.yml')
     def post(self):
         #Handle POST request for this view. Url ---> /auth/login
         """Endpoint to login a user"""
