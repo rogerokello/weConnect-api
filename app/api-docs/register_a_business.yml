@@ -1,16 +1,52 @@
 Endpoint to register a new business
 ---
+tags:
+  - Business
 parameters:
-  - name: user
+  - name: body
+    description: a json object with business details
     in: body
     required: true
     schema:
-      type: array
-      items:
-        type: string
+      type: object
+      required:
+        - "name"
+        - "category"
+        - "location"
+      properties:
+        name:
+          type: "string"
+          example: "Xedrox"
+        category:
+          type: "string"
+          example: "IT"
+        location:
+          type: "string"
+          example: "Lira"
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+
 responses:
   201:
-    description: A message showing that the business was created
+    description: Business successfuly created
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Created business: Xedrox successfuly"
   499:
     description: A token error, invalid token or missing token
+    schema: 
+      type: object
+      properties:
+        Token Error:
+          type: string
+          enum:
+            - "Invalid Token"
+            - "Token required"
   

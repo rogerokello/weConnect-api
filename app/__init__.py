@@ -1,11 +1,42 @@
 from flask import Flask, current_app
 from . import db
 from config import config
-from flasgger import Swagger
-from flasgger import swag_from
+from flasgger import Swagger, swag_from
 
 def create_app(config_name):
     app = Flask(__name__)
+
+    #make configuration for swagger
+    app.config['SWAGGER'] = {
+            'swagger': '2.0',
+            'title': 'we-connect-you-api',
+            'description': "The we-connect-you app allows you to register a business and\
+            make reviews of other businesses",
+            'basePath': '/',
+            'version': '0.0.1',
+            'contact': {
+                'Developer': 'Roger Okello',
+                'email': 'rogerokello@gmail.com'
+            },
+            'license': {
+                'name': 'MIT'
+            },
+            'tags': [
+                {
+                    'name': 'User',
+                    'description': 'The basic unit of authentication'
+                },
+                {
+                    'name': 'Business',
+                    'description': 'Businesses that you can connect with to get\
+                    a service'
+                },
+                {
+                    'name': 'Review',
+                    'description': 'A user rating and remarks for a business'
+                },
+            ]
+        }
     
     #initialise app to use swagger for doc strings
     swagger = Swagger(app)
