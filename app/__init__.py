@@ -141,6 +141,7 @@ def create_app(config_name):
 
     # route to get a business by ID
     @app.route('/businesses/<int:id>', methods=['GET'])
+    @swag_from('./api-docs/get_a_business_by_id.yml')
     def get_a_business_by_id(id):
 
         # get auth token
