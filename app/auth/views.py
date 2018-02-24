@@ -3,11 +3,13 @@ from . import auth_blueprint
 from flask.views import MethodView
 from flask import make_response, request, jsonify
 from app.models import User
+from flasgger import swag_from
 
 class RegistrationView(MethodView):
     """This class registers a new user."""
 
     #handle post request for this view( url is auth/register)
+    @swag_from('../api-docs/register_a_user.yml')
     def post(self):
 
         #get the json data sent over post as a dictionary

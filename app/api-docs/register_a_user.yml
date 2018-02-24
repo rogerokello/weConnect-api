@@ -1,0 +1,54 @@
+Endpoint to register a new user
+---
+tags:
+  - User
+parameters:
+  - name: body
+    description: a json object with business details
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: "string"
+          example: "roger"
+        password:
+          type: "string"
+          format: password
+          example: "okello"
+
+responses:
+  201:
+    description: User successfuly registered
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "You registered successfully. Please log in."
+  400:
+    description: User registration failed for some reason
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Please supply both username and password keys"
+            - "Please supply both username and password values"
+  201:
+    description: User already exists
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - User already exists. Please login.
+
+  
