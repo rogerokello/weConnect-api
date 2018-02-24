@@ -260,6 +260,7 @@ def create_app(config_name):
 
     #review a business given its ID in the url
     @app.route('/businesses/<int:id>/reviews', methods=['POST'])
+    @swag_from('./api-docs/review_a_business_given_its_id.yml')
     def review_a_business_given_its_id(id):
 
         # get auth token
