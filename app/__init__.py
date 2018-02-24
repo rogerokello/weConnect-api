@@ -309,6 +309,7 @@ def create_app(config_name):
 
     #get all business reviews
     @app.route('/businesses/<int:id>/reviews', methods=['GET'])
+    @swag_from('./api-docs/get_business_reviews_given_its_id.yml')
     def get_business_reviews_given_its_id(id):
 
         # get auth token
