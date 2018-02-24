@@ -1,0 +1,16 @@
+Endpoint to register a new business
+---
+parameters:
+  - name: user
+    in: body
+    required: true
+    schema:
+      type: array
+      items:
+        type: string
+responses:
+  201:
+    description: A message showing that the business was created
+  499:
+    description: A token error, invalid token or missing token
+  

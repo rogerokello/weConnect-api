@@ -1,9 +1,14 @@
 from flask import Flask, current_app
 from . import db
 from config import config
+from flasgger import Swagger
+from flasgger import swag_from
 
 def create_app(config_name):
     app = Flask(__name__)
+    
+    #initialise app to use swagger for doc strings
+    swagger = Swagger(app)
 
     #get configuration settings to app
     app.config.from_object(config[config_name])
@@ -16,6 +21,7 @@ def create_app(config_name):
 
     #Route to register a new business
     @app.route('/businesses', methods=['POST'])
+    @swag_from('./api-docs/register_a_business.yml')
     def register_a_business():
 
         # get auth token
