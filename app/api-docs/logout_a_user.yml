@@ -1,0 +1,46 @@
+Endpoint to logout a registered user
+---
+tags:
+  - User
+parameters:
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+
+responses:
+  201:
+    description: User logout successful
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Logout Successful"
+  303:
+    description: The user is logged out already
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "No need you are already logged out"       
+  499:
+    description: A token error or missing token
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Token required"
+  500:
+    description: Internal server Error
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
