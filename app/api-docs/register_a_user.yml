@@ -4,7 +4,7 @@ tags:
   - User
 parameters:
   - name: body
-    description: a json object with business details
+    description: this contains user registration details
     in: body
     required: true
     schema:
