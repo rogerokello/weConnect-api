@@ -102,6 +102,7 @@ def create_app(config_name):
 
     # route to get all businesses
     @app.route('/businesses', methods=['GET'])
+    @swag_from('./api-docs/get_all_businesses.yml')
     def get_all_businesses():
 
         # get auth token
