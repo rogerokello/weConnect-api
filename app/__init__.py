@@ -179,6 +179,7 @@ def create_app(config_name):
 
     #route to delete a business by ID
     @app.route('/businesses/<int:id>', methods=['DELETE'])
+    @swag_from('./api-docs/delete_a_business_by_id.yml')
     def delete_a_business_by_id(id):
 
         # get auth token
