@@ -148,6 +148,75 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Xedrox string in returned json response
         self.assertIn('Xedrox', str(response.data))
+    
+    def test_api_can_get_all_businesses_works_in_absence_of_businesses(self):
+        """Test the API works when no businesses are available (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        response = self.client().get('/businesses',
+                                    headers=dict(Authorization="Bearer " + access_token)
+                                    )
+
+        #check that a 404 response status code was returned
+        self.assertEqual(response.status_code, 404)
+
+        # check that Xedrox string in returned json response
+        self.assertIn('Sorry currently no businesses are present', str(response.data))
+
+    def test_api_can_get_all_businesses_works_when_no_token_suppiled(self):
+        """Test the API can get all businesses works when no token is supplied (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses', 
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        response = self.client().get('/businesses',
+                                    #headers=dict(Authorization="Bearer " + access_token)
+                                    )
+
+        #check that a 404 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Token required string in returned json response
+        self.assertIn('Token required', str(response.data))
+
+    def test_api_can_get_all_businesses_works_when_invalid_token_suppiled(self):
+        """Test the API can get all businesses works when invalid token is supplied (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses', 
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        response = self.client().get('/businesses',
+                                    headers=dict(Authorization="Bearer " + access_token + "5432fr")
+                                    )
+
+        #check that a 404 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Token required string in returned json response
+        self.assertIn('Invalid Token', str(response.data))
 
     def test_api_can_get_business_by_id(self):
         """Test the API can get a business by ID (GET request)"""
@@ -173,6 +242,63 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Xedrox string in returned json response
         self.assertIn('Xedrox', str(response.data))
+    
+    def test_api_can_get_business_by_id_works_when_no_biz_exists(self):
+        """Test the API can get a business by ID works when no biz exists (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        response = self.client().get('/businesses/0',
+                                    headers=dict(Authorization="Bearer " + access_token)
+                                )
+
+        #check that a 404 response status code was returned
+        self.assertEqual(response.status_code, 404)
+
+        # check that Business was not found string in returned json response
+        self.assertIn('Business was not found', str(response.data))
+    
+    def test_api_can_get_business_by_id_works_when_no_token_supplied(self):
+        """Test the API can get a business by ID works when no token supplied (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        response = self.client().get('/businesses/0',
+                                    #headers=dict(Authorization="Bearer " + access_token)
+                                )
+
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Token required string in returned json response
+        self.assertIn('Token required', str(response.data))
+
+    def test_api_can_get_business_by_id_works_when_invalid_token_supplied(self):
+        """Test the API can get a business by ID works when invalid token supplied (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        response = self.client().get('/businesses/0',
+                                    headers=dict(Authorization="Bearer " + access_token + "moinwoe")
+                                )
+
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Invalid Token string in returned json response
+        self.assertIn('Invalid Token', str(response.data))
 
     def test_api_can_remove_a_business_by_id(self):
         """Test the API can remove a business given an id (DELETE request)"""
@@ -199,6 +325,84 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Business deleted string in returned json response
         self.assertIn('Business deleted', str(response.data))
+
+    def test_api_can_remove_a_business_by_id_when_no_business_with_id_found(self):
+        """Test the API can remove a business given an id works when id is not found (DELETE request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+        
+        #delete the business by its id
+        response = self.client().delete('/businesses/1',
+                                        headers=dict(Authorization="Bearer " + access_token)
+                                        )
+
+        #check that a 404 response status code was returned
+        self.assertEqual(response.status_code, 404)
+
+        # check that Business was not found in returned json response
+        self.assertIn('Business was not found', str(response.data))
+
+    def test_api_can_remove_a_business_by_id_works_when_no_token_supplied(self):
+        """Test the API can remove a business given an id works when no token is found (DELETE request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+        
+        #delete the business by its id
+        response = self.client().delete('/businesses/0',
+                                        #headers=dict(Authorization="Bearer " + access_token)
+                                        )
+
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Token required in returned json response
+        self.assertIn('Token required', str(response.data))
+
+    def test_api_can_remove_a_business_by_id_works_when_invalid_token_supplied(self):
+        """Test the API can remove a business given an id works when invalid token is used (DELETE request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+        
+        #delete the business by its id
+        response = self.client().delete('/businesses/0',
+                                        headers=dict(Authorization="Bearer " + access_token + "ininitfytfty7y8")
+                                        )
+
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Invalid Token in returned json response
+        self.assertIn('Invalid Token', str(response.data))
 
     def test_api_can_modify_a_business_profile(self):
         """Test the API can modify a business profile (PUT request)"""
