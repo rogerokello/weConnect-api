@@ -272,3 +272,16 @@ class AuthTestCase(unittest.TestCase):
         
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
+
+    def test_user_logout_rejects_when_no_token_supplied(self):
+        """Test the API refuses to logout a user because of no token"""
+        
+        response = self.client().post('/auth/logout',
+                                #headers=dict(Authorization="Bearer " + self.get_token()),
+                                content_type='application/json')
+
+        # check that Token required string in returned json response
+        self.assertIn('Token required', str(response.data))
+        
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
