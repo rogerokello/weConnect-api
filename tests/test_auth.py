@@ -48,7 +48,7 @@ class AuthTestCase(unittest.TestCase):
             db.users.clear()
 
     def register_user(self, username="roger", password="okello"):
-        """This helper method helps register a test user."""
+        """This helper method helps register a test user. """
         user_data = {
             'username': username,
             'password': password
@@ -83,7 +83,7 @@ class AuthTestCase(unittest.TestCase):
         return access_token
 
     def test_user_registration_works(self):
-        """Test user registration works correcty."""
+        """Test user registration works correcty. (POST request)"""
 
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
@@ -100,7 +100,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
     
     def test_user_registration_rejects_json_data_not_supplied(self):
-        "Test user registration rejects when data supplied is not json"
+        "Test user registration rejects when data supplied is not json (POST request)"
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
                                 data=json.dumps({})
@@ -115,7 +115,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
 
     def test_user_registration_rejects_no_username_key_supplied(self):
-        "Test user registration rejects when no username key supplied"
+        "Test user registration rejects when no username key supplied (POST request)"
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
                                 data=json.dumps({"":""}),
@@ -131,7 +131,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
 
     def test_user_registration_rejects_no_password_key_supplied(self):
-        "Test user registration rejects when no password key supplied"
+        "Test user registration rejects when no password key supplied (POST request)"
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
                                 data=json.dumps({"username":""}),
@@ -147,7 +147,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
     
     def test_user_registration_rejects_no_username_or_password_supplied(self):
-        "Test user registration rejects when no username or password supplied"
+        "Test user registration rejects when no username or password supplied (POST request)"
         #make a request to the register endpoint
         res = self.client().post('/auth/register',
                                 data=json.dumps({"username":"",
@@ -166,7 +166,7 @@ class AuthTestCase(unittest.TestCase):
 
     
     def test_user_login_works(self):
-        """Test registered user can login."""
+        """Test registered user can login. (POST request)"""
         #first register a user
         self.client().post('/auth/register',
                                  data=json.dumps(self.user_data),
@@ -192,7 +192,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertTrue(result['access_token'])
 
     def test_user_login_rejects_json_data_not_supplied(self):
-        "Test user login rejects when data supplied is not json"
+        "Test user login rejects when data supplied is not json (POST request)"
         #make a request to the register endpoint
         res = self.client().post('/auth/login',
                                 data=json.dumps({})
@@ -207,7 +207,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
     
     def test_user_login_rejects_no_username_key_supplied(self):
-        "Test user login rejects when no username key supplied"
+        "Test user login rejects when no username key supplied (POST request)"
         #make a request to the login endpoint
         res = self.client().post('/auth/login',
                                 data=json.dumps({"":""}),
@@ -223,7 +223,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
 
     def test_user_login_rejects_no_password_key_supplied(self):
-        "Test user login rejects when no password key supplied"
+        "Test user login rejects when no password key supplied (POST request)"
         #register a user
         self.register_user()
         #make a request to the login endpoint
@@ -241,7 +241,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
 
     def test_user_login_rejects_invalid_username_supplied(self):
-        "Test user login rejects invalid username supplied"
+        "Test user login rejects invalid username supplied (POST request)"
         #register a user
         self.register_user()
         #make a request to the register endpoint
@@ -261,7 +261,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 401)
 
     def test_user_logout_works(self):
-        """Test the API can logout a user"""
+        """Test the API can logout a user (POST request)"""
         
         response = self.client().post('/auth/logout',
                                 headers=dict(Authorization="Bearer " + self.get_token()),
@@ -274,7 +274,7 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_user_logout_rejects_when_no_token_supplied(self):
-        """Test the API refuses to logout a user because of no token"""
+        """Test the API refuses to logout a user because of no token (POST request)"""
         
         response = self.client().post('/auth/logout',
                                 #headers=dict(Authorization="Bearer " + self.get_token()),
