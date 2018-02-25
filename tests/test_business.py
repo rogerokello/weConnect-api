@@ -96,6 +96,34 @@ class BusinessTestCase(unittest.TestCase):
         # check that Created business string in returned json response
         self.assertIn('Created business: ', str(response.data))
 
+    def test_new_business_creation_rejects_when_token_absent(self):
+        """Test the API rejects business creation in absence of token (POST request)"""
+        
+        response = self.client().post('/businesses',
+                                #headers=dict(Authorization="Bearer " + self.get_token()),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Created business string in returned json response
+        self.assertIn('Token required', str(response.data))
+
+    def test_new_business_creation_rejects_when_token_invalid(self):
+        """Test the API rejects business creation when token wrong (POST request)"""
+        
+        response = self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + self.get_token() + "489u9j82r"),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        #check that a 499 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Invalid Token string in returned json response
+        self.assertIn('Invalid Token', str(response.data))
+
     def test_api_can_get_all_businesses(self):
         """Test the API can get all business registered businesses (GET request)"""
         # register a test user, then log them in
