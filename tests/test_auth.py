@@ -114,6 +114,37 @@ class AuthTestCase(unittest.TestCase):
                         "Please supply json data")
         self.assertEqual(res.status_code, 400)
 
+    def test_user_registration_rejects_no_username_key_supplied(self):
+        "Test user registration rejects when no username key supplied"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                data=json.dumps({"":""}),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply a 'username'")
+        self.assertEqual(res.status_code, 400)
+
+    def test_user_registration_rejects_no_password_key_supplied(self):
+        "Test user registration rejects when no password key supplied"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                data=json.dumps({"username":""}),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply a 'password'")
+        self.assertEqual(res.status_code, 400)
 
     
     def test_user_login_works(self):

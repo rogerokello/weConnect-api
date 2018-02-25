@@ -23,16 +23,10 @@ class RegistrationView(MethodView):
                 }
                 return make_response(jsonify(response)), 400
         except Exception as e:
-            #check if nothing in json request
-            if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)":
+            #check if json data conforms to right standard
+            if "Failed to decode JSON object" in str(e):
                 response = {
-                    "message": "Please supply both username and password keys"
-                }
-                return make_response(jsonify(response)), 400
-            #check if empty strings sent with request
-            if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting ',' delimiter: line 3 column 2 (char 19)":
-                response = {
-                    "message": "Please supply both username and password values"
+                    "message": "Please supply a correct format for your json data"
                 }
                 return make_response(jsonify(response)), 400
             response = {
@@ -40,7 +34,7 @@ class RegistrationView(MethodView):
             }
             return make_response(jsonify(response)), 400
         
-        #ensure that a username and password are provided
+        #ensure that username and password keys are provided
         try:
             username = data['username']
             password = data['password']
