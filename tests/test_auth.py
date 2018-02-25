@@ -99,6 +99,23 @@ class AuthTestCase(unittest.TestCase):
                         "You registered successfully. Please log in.")
         self.assertEqual(res.status_code, 201)
     
+    def test_user_registration_rejects_json_data_not_supplied(self):
+        "Test user registration rejects when data supplied is not json"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                data=json.dumps({})
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply json data")
+        self.assertEqual(res.status_code, 400)
+
+
+    
     def test_user_login_works(self):
         """Test registered user can login."""
         #first register a user

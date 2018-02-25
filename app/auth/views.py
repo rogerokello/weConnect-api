@@ -14,7 +14,14 @@ class RegistrationView(MethodView):
 
         #get the json data sent over post as a dictionary
         try:
-            data = request.get_json()
+            #check if it was json data that was sent
+            if request.is_json:
+                data = request.get_json()
+            else:
+                response = {
+                    "message": "Please supply json data"
+                }
+                return make_response(jsonify(response)), 400
         except Exception as e:
             #check if nothing in json request
             if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)":
