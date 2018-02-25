@@ -145,6 +145,24 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(result['message'],
                         "Please supply a 'password'")
         self.assertEqual(res.status_code, 400)
+    
+    def test_user_registration_rejects_no_username_or_password_supplied(self):
+        "Test user registration rejects when no username or password supplied"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                data=json.dumps({"username":"",
+                                                "password":""
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply a values for both username and password")
+        self.assertEqual(res.status_code, 400)
 
     
     def test_user_login_works(self):
@@ -172,6 +190,75 @@ class AuthTestCase(unittest.TestCase):
 
         # Assert that the result has an access token
         self.assertTrue(result['access_token'])
+
+    def test_user_login_rejects_json_data_not_supplied(self):
+        "Test user login rejects when data supplied is not json"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/login',
+                                data=json.dumps({})
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply json data")
+        self.assertEqual(res.status_code, 400)
+    
+    def test_user_login_rejects_no_username_key_supplied(self):
+        "Test user login rejects when no username key supplied"
+        #make a request to the login endpoint
+        res = self.client().post('/auth/login',
+                                data=json.dumps({"":""}),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply a 'username'")
+        self.assertEqual(res.status_code, 400)
+
+    def test_user_login_rejects_no_password_key_supplied(self):
+        "Test user login rejects when no password key supplied"
+        #register a user
+        self.register_user()
+        #make a request to the login endpoint
+        res = self.client().post('/auth/login',
+                                data=json.dumps({"username":"roger"}),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply a 'password'")
+        self.assertEqual(res.status_code, 400)
+
+    def test_user_login_rejects_invalid_username_supplied(self):
+        "Test user login rejects invalid username supplied"
+        #register a user
+        self.register_user()
+        #make a request to the register endpoint
+        res = self.client().post('/auth/login',
+                                data=json.dumps({"username":"",
+                                                "password":""
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Invalid username, Please try again")
+        self.assertEqual(res.status_code, 401)
 
     def test_user_logout_works(self):
         """Test the API can logout a user"""

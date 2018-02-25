@@ -90,9 +90,15 @@ class LoginView(MethodView):
         #Handle POST request for this view. Url ---> /auth/login
         """Endpoint to login a user"""
         try:
-
-            #get the json data sent over post as a dictionary
-            data = request.get_json()
+            #check if the request is json data
+            if request.is_json:
+                #get the json data sent over post as a dictionary
+                data = request.get_json()
+            else:
+                response = {
+                    "message": "Please supply json data"
+                }
+                return make_response(jsonify(response)), 400
 
             # Get the user object using their user name
             user = User.get_by_username(username=data['username'])
@@ -134,9 +140,9 @@ class LoginView(MethodView):
         except Exception as e:
 
             #check if nothing in json request
-            if str(e) == "400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)":
+            if "Failed to decode JSON object:" in str(e):
                 response = {
-                    "message": "Please supply both username and password"
+                    "message": "Please supply a correct format for your json data"
                 }
                 return make_response(jsonify(response)), 400
             
