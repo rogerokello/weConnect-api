@@ -1,4 +1,4 @@
-from flask import Flask, current_app
+from flask import Flask, current_app, session
 from . import db
 from config import config
 from flasgger import Swagger, swag_from

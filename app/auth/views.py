@@ -1,7 +1,7 @@
 from . import auth_blueprint
 
 from flask.views import MethodView
-from flask import make_response, request, jsonify
+from flask import make_response, request, jsonify, session
 from app.models import User
 from flasgger import swag_from
 
@@ -109,6 +109,8 @@ class LoginView(MethodView):
                 # Generate the access token. This will be used as
                 # the authorization header
                 access_token = user.generate_token(user.get_user_id())
+                #store token in session variable called token
+                session['token'] = access_token.decode()
                 if access_token:
                     response = {
                         'message': 'You logged in successfully.',
@@ -174,17 +176,19 @@ class LogoutView(MethodView):
         try:
             # get auth token
             auth_header = request.headers.get('Authorization')
-
+            print(auth_header)
             if auth_header:
                 auth_token = auth_header.split(" ")[1]
             else:
                 auth_token = ''
-        
+            #print(auth_token + "token")
             if auth_token:
                 a_user = User.get_user_by_token(auth_token)
-                if a_user.check_already_logged_in():
+                #print(auth_token)
+                if User.get_user_by_token(auth_token) == User.get_user_by_token(session['token']):
                     #log out user if logged in
-                    a_user.logout_user()
+                    session.clear()
+                    #a_user.logout_user()
                     response = {
                         'message': 'Logout Successful'
                     }

@@ -431,6 +431,33 @@ class BusinessTestCase(unittest.TestCase):
         # check that Megatrends string in returned json response
         self.assertIn('Megatrends', str(response.data))
 
+    def test_api_can_modify_a_business_profile_works_when_no_token_supplied(self):
+        """Test the API can modify a business profile works when no token supplied (PUT request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        # Edit business 
+        response = self.client().put('/businesses/0',
+                            #headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.edited_business),
+                            content_type='application/json')
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 499)
+
+        # check that Megatrends string in returned json response
+        self.assertIn('Token required', str(response.data))
+
     def test_api_can_create_a_business_review(self):
         """Test the API can create a business review (POST request)"""
         # register a test user, then log them in
