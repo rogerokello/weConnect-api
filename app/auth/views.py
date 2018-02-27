@@ -2,7 +2,8 @@ from . import auth_blueprint
 
 from flask.views import MethodView
 from flask import make_response, request, jsonify, session
-from app.models import User
+from app.models import User, Loggedinuser
+from app import db
 from flasgger import swag_from
 
 class RegistrationView(MethodView):
@@ -51,7 +52,9 @@ class RegistrationView(MethodView):
             return make_response(jsonify(response)), 400
 
         # Check to see if the user already exists
-        user = User.get_by_username(username=data['username'])
+        #user = User.get_by_username(username=data['username'])
+        # Query to see if the user already exists
+        user = User.query.filter_by(username=data['username']).first()
 
         if not user:
             #user does not exist
@@ -60,7 +63,7 @@ class RegistrationView(MethodView):
                 username = data['username']
                 password = data['password']
                 user = User(username=username, password=password)
-                User.add(user)
+                user.add()
 
                 response = {
                     'message': 'You registered successfully. Please log in.'
@@ -101,16 +104,35 @@ class LoginView(MethodView):
                 return make_response(jsonify(response)), 400
 
             # Get the user object using their user name
-            user = User.get_by_username(username=data['username'])
-
+            #user = User.get_by_username(username=data['username'])
+            # Query to see if the user already exists
+            #user = User.query.filter_by(username=data['username']).first()
+            found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
             # Try to authenticate the found user using their password
-            if user and user.check_password_is_valid(password=data['password']):
+            if found_user:
                 
+                #check if user is already logged in
+                if found_user.logged_in == 1:
+                    response = {
+                        'message': 'No need you are already logged in'
+                    }
+                    #make and send the response
+                    return make_response(jsonify(response)), 303
+
+                #change the logged in flag to 1
+                found_user.logged_in = 1
+                
+
                 # Generate the access token. This will be used as
                 # the authorization header
-                access_token = user.generate_token(user.get_user_id())
-                #store token in session variable called token
-                session['token'] = access_token.decode()
+                access_token = User.generate_token(found_user.id)
+                db.session.commit()
+
+                #store token in the loggedinusers table
+                loggedinuser = Loggedinuser(token=access_token.decode())
+                db.session.add(loggedinuser)
+                db.session.commit()
+                
                 if access_token:
                     response = {
                         'message': 'You logged in successfully.',
@@ -124,13 +146,7 @@ class LoginView(MethodView):
                     #return a successful response
                     return make_response(jsonify(response)), 200
                 
-                #check if user is already logged in
-                if user.check_already_logged_in():
-                    response = {
-                        'message': 'No need you are already logged in'
-                    }
-                    #make and send the response
-                    return make_response(jsonify(response)), 303
+                
 
             else:
                 # User does not exist. Therefore, we return an error message
@@ -154,8 +170,8 @@ class LoginView(MethodView):
                     'message': "Please supply a " + str(e)
                 }
 
-            # Return a server error using the HTTP Error Code 400 (Bad request)
-            return make_response(jsonify(response)), 400
+                # Return a server error using the HTTP Error Code 400 (Bad request)
+                return make_response(jsonify(response)), 400
 
 
             # Create a response containing an string error message
@@ -183,15 +199,31 @@ class LogoutView(MethodView):
                 auth_token = ''
             
             if auth_token:
-                a_user = User.get_user_by_token(auth_token)
-                #print(auth_token)
-                print(session.get('token'))
-                if a_user.get_user_id_given_token(auth_token) == a_user.get_user_id_given_token(session.get('token')):
-                    #log out user if logged in
-                    #clear the session object
-                    #session.pop()
-                    session.pop('token', None)
-    
+                #decode the token that was stored after login to extract the user id
+                user_id = User.decode_token(auth_token)
+
+                #check if token exists in the Loggedinuser table
+                a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+                
+                #Use the user ID that was decoded from the token to extract
+                # the user so u can check if the logged in flag is set to 1
+                user_with_id = User.query.filter_by(id=int(user_id)).first()
+                
+                #check if that user is currently logged in and
+                # the token is stored table with tokens
+                if a_logged_in_user_token and user_with_id.logged_in == 1:
+                    
+                    #
+                     #perform these actions to logout
+                    #
+
+                    #remove the token from the token table
+                    Loggedinuser.delete_token(a_logged_in_user_token)
+
+                    #set the user logged in flag to 0
+                    user_with_id.logged_in = 0
+                    user_with_id.save()
+
                     #a_user.logout_user()
                     response = {
                         'message': 'Logout Successful'
@@ -245,14 +277,32 @@ class Reset_passwordView(MethodView):
                     #make and send the response
                     return make_response(jsonify(response)), 400
 
-                a_user = User.get_user_by_token(auth_token)
+                #decode the token that was stored after login to extract the user id
+                user_id = User.decode_token(auth_token)
+
+                #check if token exists in the Loggedinuser table
+                a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+                #Use the user ID that was decoded from the token to extract
+                # the user so u can check if the logged in flag is set to 1
+                user_with_id = User.query.filter_by(id=int(user_id)).first()
+                
                 #print(auth_token)
-                if (User.get_user_by_token(auth_token) is not None):
+                if a_logged_in_user_token and user_with_id.logged_in == 1:
                     #reset the user password
-                    return_message = a_user.reset_password(str(your_previous_password),
-                                            str(your_new_password))
+                    #return_message = a_user.reset_password(str(your_previous_password),
+                                            #str(your_new_password))
                     
-                    if return_message == "success":
+                    #check if the user with that id and password exist
+                    found_user = User.query.filter_by(id=int(user_id), password=str(your_previous_password)).first()
+
+                    if found_user:
+                        #change the password
+                        found_user.password = str(your_new_password)
+                        
+                        # make your changes permanent(Commit)
+                        found_user.save()
+
                         response = {
                             'message': 'Password reset Successful'
                         }
@@ -260,7 +310,7 @@ class Reset_passwordView(MethodView):
                         return make_response(jsonify(response)), 201
                     else:
                         response = {
-                            'message': return_message
+                            'message': "Password reset unsuccessful"
                         }
                         #make and send the response
                         return make_response(jsonify(response)), 304

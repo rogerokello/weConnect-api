@@ -44,14 +44,15 @@ class AuthTestCase(unittest.TestCase):
         #bind the app context
         with self.app.app_context():
             self.client = self.app.test_client
+            # create all tables
+            db.create_all()
 
     def tearDown(self):
         """teardown all initialized variables."""
         with self.app.app_context():
-            # delete database contents
-            db.businesses.clear()
-            db.reviews.clear()
-            db.users.clear()
+            # drop all tables
+            db.session.remove()
+            db.drop_all()
 
     def register_user(self, username="roger", password="okello"):
         """This helper method helps register a test user. """
@@ -267,6 +268,32 @@ class AuthTestCase(unittest.TestCase):
                         "Invalid username, Please try again")
         self.assertEqual(res.status_code, 401)
 
+    def test_user_logout_works(self):
+        """Test the logout works (POST request)"""
+
+        self.client().post('/auth/register',
+                                 data=json.dumps(self.user_data),
+                                 content_type='application/json'
+                            )
+
+        login_res = self.client().post('/auth/login',
+                                        data=json.dumps(self.user_data),
+                                        content_type='application/json'
+                                        )
+
+        result = json.loads(login_res.data.decode())
+        
+
+        response = self.client().post('/auth/logout',
+                                headers=dict(Authorization="Bearer " + result['access_token']),
+                                content_type='application/json')
+
+        # check that Token required string in returned json response
+        self.assertIn('Logout Successful', str(response.data))
+        
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
     def test_user_logout_rejects_when_no_token_supplied(self):
         """Test the API refuses to logout a user because of no token (POST request)"""
         
@@ -282,13 +309,25 @@ class AuthTestCase(unittest.TestCase):
 
     def test_user_logout_works_when_someone_already_logged_out(self):
         """Test logout works when someone already logged out(POST request)"""
+
+        self.client().post('/auth/register',
+                                 data=json.dumps(self.user_data),
+                                 content_type='application/json'
+                            )
+
+        login_res = self.client().post('/auth/login',
+                                        data=json.dumps(self.user_data),
+                                        content_type='application/json'
+                                        )
+
+        result = json.loads(login_res.data.decode())
         
         self.client().post('/auth/logout',
-                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                headers=dict(Authorization="Bearer " + result['access_token']),
                                 content_type='application/json')
 
         response = self.client().post('/auth/logout',
-                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                headers=dict(Authorization="Bearer " + result['access_token']),
                                 content_type='application/json')
 
         # check that Token required string in returned json response

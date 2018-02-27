@@ -46,12 +46,23 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(64))
+    logged_in = db.Column(db.Integer)
     businesses = db.relationship('Business', backref='creator', lazy='dynamic')
 
     # create user object
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.logged_in = 0
+
+    #Create a method to add the business
+    def add(self):
+       db.session.add(self)
+       db.session.commit()
+
+    #create a method to save the business
+    def save(self):
+        db.session.commit()
 
     @classmethod
     def generate_token(self, user_id):
@@ -90,13 +101,23 @@ class User(db.Model):
             # the token is invalid, return an error string
             return "Invalid token. Please register or login"
 
-class loggedinusers(db.Model):
+class Loggedinuser(db.Model):
     #fields
     id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(500))
+    token = db.Column(db.Text())
 
     # create token object
-    def __init__(self, token_sent):
-        self.token = token_sent
+    def __init__(self, token):
+        self.token = token
+
+    #Create a class method to add the token
+    def add(self):
+       db.session.add(self)
+       db.session.commit()
+
+    @classmethod
+    def delete_token(self, token):
+        db.session.delete(token)
+        db.session.commit()
 
 

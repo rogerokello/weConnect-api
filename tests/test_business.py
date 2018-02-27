@@ -37,16 +37,16 @@ class BusinessTestCase(unittest.TestCase):
 
         #bind the app context
         with self.app.app_context():
-            pass
+            # create all tables
+            db.create_all()
 
     def tearDown(self):
         """teardown all initialized variables."""
         with self.app.app_context():
-            # delete database contents
-            db.businesses.clear()
-            db.reviews.clear()
-            db.users.clear()
-
+            # drop all tables
+            db.session.remove()
+            db.drop_all()
+'''
     def register_user(self, username="roger", password="okello"):
         """This helper method helps register a test user."""
         user_data = {
@@ -514,3 +514,4 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Good stuff string in returned json response
         self.assertIn('Good stuff', str(response.data))
+'''
