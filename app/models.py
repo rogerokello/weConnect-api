@@ -92,6 +92,7 @@ class User(db.Model):
 
 class loggedinusers(db.Model):
     #fields
+    id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(500))
 
     # create token object
