@@ -4,17 +4,16 @@
 # weconnect api
 An api to enable you manage your business and reviews. Please visit a prototype at https://rogerokello.github.io/weconnect-practice/
 
-## Project Dependencies
-1. Ubuntu 14.0 and above
-2. Python 3.6.*
-3. Flask 0.12.*
-
 ## How to run the flask application
 1. Create a folder weconnect on your computer
    
-2. Download the repository at https://github.com/rogerokello/weconnect-practice/tree/dev-v1 to your computer into the created folder
+2. Clone the app to your folder by issuing this command
 
-3. Navigate into created folder
+    ```
+        $ git clone https://github.com/rogerokello/weconnect-practice.git
+    ```
+    NB: Read these resources to install git: https://git-scm.com/downloads
+3. Navigate into cloned folder
 
     ```
         $ cd weconnect-practice
