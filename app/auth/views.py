@@ -217,7 +217,7 @@ class LogoutView(MethodView):
 
 class Reset_passwordView(MethodView):
     """This class-based view handles password resetting"""
-    #@swag_from('../api-docs/logout_a_user.yml')
+    @swag_from('../api-docs/reset_password.yml')
     def post(self):
         #Handle POST request for this view. Url ---> /auth/reset-password
         """Endpoint to reset"""
@@ -240,7 +240,7 @@ class Reset_passwordView(MethodView):
                         'message': 'Please supply json data'
                     }
                     #make and send the response
-                    return make_response(jsonify(response)), 404
+                    return make_response(jsonify(response)), 400
 
                 a_user = User.get_user_by_token(auth_token)
                 #print(auth_token)
@@ -260,7 +260,7 @@ class Reset_passwordView(MethodView):
                             'message': return_message
                         }
                         #make and send the response
-                        return make_response(jsonify(response)), 400
+                        return make_response(jsonify(response)), 304
             else:
                 return make_response(jsonify({'Token Error': "Token required"})), 499
 
