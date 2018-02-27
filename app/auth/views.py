@@ -2,7 +2,7 @@ from . import auth_blueprint
 
 from flask.views import MethodView
 from flask import make_response, request, jsonify, session
-from app.models import User, TokenBlacklist
+from app.models import User
 from flasgger import swag_from
 
 class RegistrationView(MethodView):
@@ -120,7 +120,7 @@ class LoginView(MethodView):
                     }
 
                     #change the login state
-                    user.login_user()
+                    #user.login_user()
                     #return a successful response
                     return make_response(jsonify(response)), 200
                 
@@ -181,14 +181,17 @@ class LogoutView(MethodView):
                 auth_token = auth_header.split(" ")[1]
             else:
                 auth_token = ''
-            #print(auth_token + "token")
+            
             if auth_token:
                 a_user = User.get_user_by_token(auth_token)
                 #print(auth_token)
-                if (User.get_user_by_token(auth_token) is not None) and (TokenBlacklist.check_if_in_list(auth_token) is False):
+                print(session.get('token'))
+                if a_user.get_user_id_given_token(auth_token) == a_user.get_user_id_given_token(session.get('token')):
                     #log out user if logged in
-                    #session.clear()
-                    TokenBlacklist.add(auth_token)
+                    #clear the session object
+                    #session.pop()
+                    session.pop('token', None)
+    
                     #a_user.logout_user()
                     response = {
                         'message': 'Logout Successful'
@@ -244,7 +247,7 @@ class Reset_passwordView(MethodView):
 
                 a_user = User.get_user_by_token(auth_token)
                 #print(auth_token)
-                if (User.get_user_by_token(auth_token) is not None) and (TokenBlacklist.check_if_in_list(auth_token) is False):
+                if (User.get_user_by_token(auth_token) is not None):
                     #reset the user password
                     return_message = a_user.reset_password(str(your_previous_password),
                                             str(your_new_password))

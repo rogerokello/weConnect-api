@@ -1,6 +1,6 @@
 import unittest
 import json
-from app import create_app, db
+from app import create_app, db, session
 
 class AuthTestCase(unittest.TestCase):
     """Test case for the authentication blueprint."""
@@ -9,7 +9,7 @@ class AuthTestCase(unittest.TestCase):
         self.app = create_app('testing')
 
         #create a test client
-        self.client = self.app.test_client
+        #self.client = self.app.test_client
 
         #create a dict to be used to add a new biz
         self.a_business = {'name':'Xedrox',
@@ -43,7 +43,7 @@ class AuthTestCase(unittest.TestCase):
 
         #bind the app context
         with self.app.app_context():
-            pass
+            self.client = self.app.test_client
 
     def tearDown(self):
         """teardown all initialized variables."""
@@ -173,6 +173,7 @@ class AuthTestCase(unittest.TestCase):
     
     def test_user_login_works(self):
         """Test registered user can login. (POST request)"""
+        #with self.clie as c:
         #first register a user
         self.client().post('/auth/register',
                                  data=json.dumps(self.user_data),
@@ -265,37 +266,6 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(result['message'],
                         "Invalid username, Please try again")
         self.assertEqual(res.status_code, 401)
-
-    def test_user_logout_works(self):
-        """ Test that user successfuly logs out """
-         #first register a user
-        self.client().post('/auth/register',
-                                 data=json.dumps(self.user_data),
-                                 content_type='application/json'
-                            )
-        
-        #try to login using registration credentials
-        login_res = self.client().post('/auth/login',
-                                        data=json.dumps(self.user_data),
-                                        content_type='application/json'
-                                        )
-        
-        # get the results returned in json format
-        result = json.loads(login_res.data.decode())
-        #result['access_token']
-        token = self.get_token()
-        response = self.client().post('/auth/logout',
-                                headers=dict(Authorization="Bearer " + token),
-                                content_type='application/json')
-
-        #print(token)
-        
-        # check that Logout Successful string in returned json response
-        self.assertIn('Logout Successful', str(response.data))
-        
-        #check that a 201 response status code was returned
-        self.assertEqual(response.status_code, 201)
-    
 
     def test_user_logout_rejects_when_no_token_supplied(self):
         """Test the API refuses to logout a user because of no token (POST request)"""

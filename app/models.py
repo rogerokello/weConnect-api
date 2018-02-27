@@ -136,6 +136,11 @@ class User():
             if user.username == self.username:
                 return id
         return None
+
+    #method to return user id by token
+    def get_user_id_given_token(self, token):
+        """ Gets and id given the token """
+        return self.decode_token(token)
     
     #check if password is valid
     def check_password_is_valid(self, password):
@@ -208,15 +213,3 @@ class User():
             return "success"
         else:
             return "Please supply correct old password"
-
-class TokenBlacklist():
-    @classmethod
-    def add(self, token):
-        blacklisted_tokens.append(token)
-
-    @classmethod
-    def check_if_in_list(self, token):
-        for a_token in blacklisted_tokens:
-            if token == a_token:
-                return True
-        return False

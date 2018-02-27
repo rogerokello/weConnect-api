@@ -54,23 +54,20 @@ def create_app(config_name):
     @app.route('/businesses', methods=['POST'])
     @swag_from('./api-docs/register_a_business.yml')
     def register_a_business():
-
-        # get auth token
+        # get authorisation header
         auth_header = request.headers.get('Authorization')
         if auth_header:
+            #pick token after splitting with the bearre
             auth_token = auth_header.split(" ")[1]
         else:
             auth_token = ''
         
-        if auth_token:
-
-            # Attempt to decode the token sent and get the User ID
+        if auth_token is not '':
             user_id = User.decode_token(auth_token)
 
             #try to see if you can get a user by a token
             # they are identified with
             if User.get_user_by_token(auth_token) is not None:
-
                 #tranform json data got into a dictionary
                 data = request.get_json()
 
@@ -98,7 +95,8 @@ def create_app(config_name):
                                     {'Token Error': "Invalid Token"}
                         )), 499
         else:
-            return make_response(jsonify({'Token Error': "Token required"})), 499
+            if auth_token == '':
+                return make_response(jsonify({'Token Error': "Token required"})), 499
 
     # route to get all businesses
     @app.route('/businesses', methods=['GET'])
