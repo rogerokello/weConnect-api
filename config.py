@@ -11,9 +11,13 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'postgresql://postgres:admin@localhost/apibusinessdb'
 
 class TestingConfig(Config):
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
+        'postgresql://postgres:admin@localhost/business_test_db'
 
 config = {
     'development': DevelopmentConfig,
