@@ -55,6 +55,9 @@ An api to enable you manage your business and reviews. Please visit a prototype 
         "location": "Lira"
     }
     ```
+9. API documentation and live API
+-  You may visit the api documention live at https://we-connect-all.herokuapp.com/apidocs/ to have a feel of the api
+
 ## How to test the flask application
 1. Create a folder weconnect on your computer
    
