@@ -2,7 +2,7 @@ from . import auth_blueprint
 
 from flask.views import MethodView
 from flask import make_response, request, jsonify, session
-from app.models import User
+from app.models import User, TokenBlacklist
 from flasgger import swag_from
 
 class RegistrationView(MethodView):
@@ -176,7 +176,7 @@ class LogoutView(MethodView):
         try:
             # get auth token
             auth_header = request.headers.get('Authorization')
-            print(auth_header)
+            #print(auth_header)
             if auth_header:
                 auth_token = auth_header.split(" ")[1]
             else:
@@ -185,9 +185,10 @@ class LogoutView(MethodView):
             if auth_token:
                 a_user = User.get_user_by_token(auth_token)
                 #print(auth_token)
-                if User.get_user_by_token(auth_token) == User.get_user_by_token(session['token']):
+                if (User.get_user_by_token(auth_token) is not None) and (TokenBlacklist.check_if_in_list(auth_token) is False):
                     #log out user if logged in
-                    session.clear()
+                    #session.clear()
+                    TokenBlacklist.add(auth_token)
                     #a_user.logout_user()
                     response = {
                         'message': 'Logout Successful'
@@ -213,12 +214,71 @@ class LogoutView(MethodView):
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
             return make_response(jsonify(response)), 500
+
+class Reset_passwordView(MethodView):
+    """This class-based view handles password resetting"""
+    #@swag_from('../api-docs/logout_a_user.yml')
+    def post(self):
+        #Handle POST request for this view. Url ---> /auth/reset-password
+        """Endpoint to reset"""
+        try:
+            # get auth token
+            auth_header = request.headers.get('Authorization')
+            #print(auth_header)
+            if auth_header:
+                auth_token = auth_header.split(" ")[1]
+            else:
+                auth_token = ''
+            #print(auth_token + "token")
+            if auth_token:
+                if request.is_json:
+                    data = request.get_json()
+                    your_previous_password = data['previous_password']
+                    your_new_password = data['new_password']
+                else:
+                    response = {
+                        'message': 'Please supply json data'
+                    }
+                    #make and send the response
+                    return make_response(jsonify(response)), 404
+
+                a_user = User.get_user_by_token(auth_token)
+                #print(auth_token)
+                if (User.get_user_by_token(auth_token) is not None) and (TokenBlacklist.check_if_in_list(auth_token) is False):
+                    #reset the user password
+                    return_message = a_user.reset_password(str(your_previous_password),
+                                            str(your_new_password))
+                    
+                    if return_message == "success":
+                        response = {
+                            'message': 'Password reset Successful'
+                        }
+                        #make and send the response
+                        return make_response(jsonify(response)), 201
+                    else:
+                        response = {
+                            'message': return_message
+                        }
+                        #make and send the response
+                        return make_response(jsonify(response)), 400
+            else:
+                return make_response(jsonify({'Token Error': "Token required"})), 499
+
+        except Exception as e:
+
+            response = {
+                'message': str(e)
+            }
+
+            # Return a server error using the HTTP Error Code 500 (Internal Server Error)
+            return make_response(jsonify(response)), 500
     
 
 # Define the API resource
 registration_view = RegistrationView.as_view('registration_view')
 login_view = LoginView.as_view('login_view')
 logout_view = LogoutView.as_view('logout_view')
+reset_password_view = Reset_passwordView.as_view('reset_password_view')
 
 # Define the rule for the registration url --->  /auth/register
 # Then add the rule to the blueprint
@@ -239,4 +299,11 @@ auth_blueprint.add_url_rule(
 auth_blueprint.add_url_rule(
     '/auth/logout',
     view_func=logout_view,
+    methods=['POST'])
+
+# Define the rule for the reset password url --->  /auth/reset-password
+# Then add the rule to the blueprint
+auth_blueprint.add_url_rule(
+    '/auth/reset-password',
+    view_func=reset_password_view,
     methods=['POST'])

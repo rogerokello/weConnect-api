@@ -35,6 +35,12 @@ class AuthTestCase(unittest.TestCase):
             'password': 'okello'
         }
 
+        #password reset details
+        self.password_infor = {
+            'previous_password': 'okello',
+            'new_password': 'james'
+        }
+
         #bind the app context
         with self.app.app_context():
             pass
@@ -260,7 +266,6 @@ class AuthTestCase(unittest.TestCase):
                         "Invalid username, Please try again")
         self.assertEqual(res.status_code, 401)
 
-    '''
     def test_user_logout_works(self):
         """ Test that user successfuly logs out """
          #first register a user
@@ -280,17 +285,17 @@ class AuthTestCase(unittest.TestCase):
         #result['access_token']
         token = self.get_token()
         response = self.client().post('/auth/logout',
-                                headers=dict(Authorization=token),
+                                headers=dict(Authorization="Bearer " + token),
                                 content_type='application/json')
 
-        print(token)
+        #print(token)
         
         # check that Logout Successful string in returned json response
         self.assertIn('Logout Successful', str(response.data))
         
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
-    '''
+    
 
     def test_user_logout_rejects_when_no_token_supplied(self):
         """Test the API refuses to logout a user because of no token (POST request)"""
@@ -304,3 +309,34 @@ class AuthTestCase(unittest.TestCase):
         
         #check that a 499 response status code was returned
         self.assertEqual(response.status_code, 499)
+
+    def test_user_logout_works_when_someone_already_logged_out(self):
+        """Test logout works when someone already logged out(POST request)"""
+        
+        self.client().post('/auth/logout',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                content_type='application/json')
+
+        response = self.client().post('/auth/logout',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                content_type='application/json')
+
+        # check that Token required string in returned json response
+        self.assertIn('No need you are already logged out', str(response.data))
+        
+        #check that a 303 response status code was returned
+        self.assertEqual(response.status_code, 303)
+
+    def test_password_reset_works(self):
+        """Test the API can reset a password (POST request)"""
+        
+        response = self.client().post('/auth/reset-password',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                data = json.dumps(self.password_infor),
+                                content_type='application/json')
+
+        # check that Token required string in returned json response
+        self.assertIn('Password reset Successful', str(response.data))
+        
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)

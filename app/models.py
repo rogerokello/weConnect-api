@@ -1,4 +1,4 @@
-from .db import businesses, reviews, users
+from .db import businesses, reviews, users, blacklisted_tokens
 from app import current_app
 from flask_bcrypt import Bcrypt
 import jwt
@@ -201,3 +201,22 @@ class User():
             if str(counter) == str(user.decode_token(token)):
                 return user
         return None
+
+    def reset_password(self, old_password , new_password):
+        if old_password == self.password:
+            self.password = new_password
+            return "success"
+        else:
+            return "Please supply correct old password"
+
+class TokenBlacklist():
+    @classmethod
+    def add(self, token):
+        blacklisted_tokens.append(token)
+
+    @classmethod
+    def check_if_in_list(self, token):
+        for a_token in blacklisted_tokens:
+            if token == a_token:
+                return True
+        return False
