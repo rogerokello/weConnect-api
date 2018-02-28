@@ -46,7 +46,7 @@ class BusinessTestCase(unittest.TestCase):
             # drop all tables
             db.session.remove()
             db.drop_all()
-'''
+
     def register_user(self, username="roger", password="okello"):
         """This helper method helps register a test user."""
         user_data = {
@@ -233,7 +233,7 @@ class BusinessTestCase(unittest.TestCase):
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
 
-        response = self.client().get('/businesses/0',
+        response = self.client().get('/businesses/1',
                                     headers=dict(Authorization="Bearer " + access_token)
                                 )
 
@@ -252,7 +252,7 @@ class BusinessTestCase(unittest.TestCase):
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
 
-        response = self.client().get('/businesses/0',
+        response = self.client().get('/businesses/1',
                                     headers=dict(Authorization="Bearer " + access_token)
                                 )
 
@@ -271,7 +271,7 @@ class BusinessTestCase(unittest.TestCase):
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
 
-        response = self.client().get('/businesses/0',
+        response = self.client().get('/businesses/1',
                                     #headers=dict(Authorization="Bearer " + access_token)
                                 )
 
@@ -316,7 +316,7 @@ class BusinessTestCase(unittest.TestCase):
                                 content_type='application/json')
         
         #delete the business by its id
-        response = self.client().delete('/businesses/0',
+        response = self.client().delete('/businesses/1',
                                         headers=dict(Authorization="Bearer " + access_token)
                                         )
 
@@ -325,6 +325,7 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Business deleted string in returned json response
         self.assertIn('Business deleted', str(response.data))
+
 
     def test_api_can_remove_a_business_by_id_when_no_business_with_id_found(self):
         """Test the API can remove a business given an id works when id is not found (DELETE request)"""
@@ -341,6 +342,11 @@ class BusinessTestCase(unittest.TestCase):
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
         
+        #delete the business by its id
+        self.client().delete('/businesses/1',
+                                        headers=dict(Authorization="Bearer " + access_token)
+                                        )
+
         #delete the business by its id
         response = self.client().delete('/businesses/1',
                                         headers=dict(Authorization="Bearer " + access_token)
@@ -420,7 +426,7 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         # Edit business 
-        response = self.client().put('/businesses/0',
+        response = self.client().put('/businesses/1',
                             headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.edited_business),
                             content_type='application/json')
@@ -452,12 +458,12 @@ class BusinessTestCase(unittest.TestCase):
                             data=json.dumps(self.edited_business),
                             content_type='application/json')
 
-        #check that a 201 response status code was returned
+        #check that a 499 response status code was returned
         self.assertEqual(response.status_code, 499)
 
         # check that Megatrends string in returned json response
         self.assertIn('Token required', str(response.data))
-
+'''
     def test_api_can_create_a_business_review(self):
         """Test the API can create a business review (POST request)"""
         # register a test user, then log them in

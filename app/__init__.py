@@ -50,7 +50,7 @@ def create_app(config_name):
     #apply the configuration settings on app
     config[config_name].init_app(app)
 
-    from .models import Business, Review, User
+    from .models import Business, Review, User, Loggedinuser
     db.init_app(app)
     from flask import request, jsonify, make_response
 
@@ -67,11 +67,30 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token is not '':
+            #decode the token that was stored after login to extract the user id
+            user_id = User.decode_token(auth_token)
+
+            if user_id == "Expired token. Please login to get a new token":
+                return make_response(jsonify(
+                                    {'Token Error': " Token Expired. Please login to get a new one"}
+                        )), 499
+
+            if user_id == "Invalid token. Please register or login":
+                return make_response(jsonify(
+                                    {'Token Error': " Invalid Token. Please login to get a new one"}
+                        )), 499
+
+            #check if token exists in the Loggedinuser table
+            a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+            #Use the user ID that was decoded from the token to extract
+            # the user so u can check if the logged in flag is set to 1
+            user_with_id = User.query.filter_by(id=int(user_id)).first()
             user_id = User.decode_token(auth_token)
 
             #try to see if you can get a user by a token
             # they are identified with
-            if User.get_user_by_token(auth_token) is not None:
+            if a_logged_in_user_token and user_with_id.logged_in == 1:
                 #tranform json data got into a dictionary
                 data = request.get_json()
 
@@ -81,15 +100,19 @@ def create_app(config_name):
                 category = data['category']
                 location = data['location']
 
+                a_user = User.query.get(int(user_id))
+
                 #create a business object
                 a_business = Business(name=name,
                                         category=category,
                                         location=location)
 
                 #add business to the non-persistent database
+                a_business.user_id = int(user_id)
+                db.session.add(a_business)
                 Business.add(a_business)
 
-                message = "Created business: " + a_business.name + "successfuly"
+                message = "Created business: " + name + "successfuly"
                 response = {
                     'message': message
                 }
@@ -116,16 +139,46 @@ def create_app(config_name):
         
         if auth_token:
 
+            #decode the token that was stored after login to extract the user id
+            user_id = User.decode_token(auth_token)
+
+            if user_id == "Expired token. Please login to get a new token":
+                return make_response(jsonify(
+                                    {'Token Error': " Token Expired. Please login to get a new one"}
+                        )), 499
+
+            if user_id == "Invalid token. Please register or login":
+                return make_response(jsonify(
+                                    {'Token Error': " Invalid Token. Please login to get a new one"}
+                        )), 499
+
+            #check if token exists in the Loggedinuser table
+            a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+            #Use the user ID that was decoded from the token to extract
+            # the user so u can check if the logged in flag is set to 1
+            user_with_id = User.query.filter_by(id=int(user_id)).first()
+            user_id = User.decode_token(auth_token)
+
             #try to see if you can get a user by a token
             # they are identified with
-            if User.get_user_by_token(auth_token) is not None:
+            if a_logged_in_user_token and user_with_id.logged_in == 1:
 
                 # get all the businesses currently available
-                current_businesses = Business.get_all()
+                current_businesses = Business.query.all()
 
+                found_business_list = []
                 if len(current_businesses) > 0:
+                    for a_business in current_businesses:
+                        found_business_list. append({
+                            'id': a_business.id,
+                            'name': a_business.name,
+                            'location': a_business.location,
+                            'user_id': a_business.user_id
+                        })
+
                     response = {
-                        'Your current businesses are: ': current_businesses
+                        'Your current businesses are: ': found_business_list
                     }
                     return make_response(jsonify(response)), 201
                 else:
@@ -155,18 +208,40 @@ def create_app(config_name):
         
         if auth_token:
 
+            #decode the token that was stored after login to extract the user id
+            user_id = User.decode_token(auth_token)
+
+            if user_id == "Expired token. Please login to get a new token":
+                return make_response(jsonify(
+                                    {'Token Error': " Token Expired. Please login to get a new one"}
+                        )), 499
+
+            if user_id == "Invalid token. Please register or login":
+                return make_response(jsonify(
+                                    {'Token Error': " Invalid Token. Please login to get a new one"}
+                        )), 499
+
+            #check if token exists in the Loggedinuser table
+            a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+            #Use the user ID that was decoded from the token to extract
+            # the user so u can check if the logged in flag is set to 1
+            user_with_id = User.query.filter_by(id=int(user_id)).first()
+            user_id = User.decode_token(auth_token)
+
             #try to see if you can get a user by a token
             # they are identified with
-            if User.get_user_by_token(auth_token) is not None:
+            if a_logged_in_user_token and user_with_id.logged_in == 1:
                 #check if business is there
-                if Business.id_exists(id):
-
-                    found_business = Business.get_by_id(id)
+                found_business = Business.query.filter_by(id=id).first()
+                if found_business:             
+                    
                     business_as_a_dict = {
-                        'id': id,
+                        'id': found_business.id,
                         'name': found_business.name,
                         'category': found_business.category,
-                        'location': found_business.location
+                        'location': found_business.location,
+                        'user_id': found_business.user_id
                     }
 
                     return make_response(jsonify({'Business found': business_as_a_dict})), 201
@@ -193,17 +268,44 @@ def create_app(config_name):
         
         if auth_token:
 
+            #decode the token that was stored after login to extract the user id
+            user_id = User.decode_token(auth_token)
+
+            if user_id == "Expired token. Please login to get a new token":
+                return make_response(jsonify(
+                                    {'Token Error': " Token Expired. Please login to get a new one"}
+                        )), 499
+
+            if user_id == "Invalid token. Please register or login":
+                return make_response(jsonify(
+                                    {'Token Error': " Invalid Token. Please login to get a new one"}
+                        )), 499
+
+            #check if token exists in the Loggedinuser table
+            a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+            #Use the user ID that was decoded from the token to extract
+            # the user so u can check if the logged in flag is set to 1
+            user_with_id = User.query.filter_by(id=int(user_id)).first()
+            #user_id = User.decode_token(auth_token)
+
             #try to see if you can get a user by a token
             # they are identified with
-            if User.get_user_by_token(auth_token) is not None:
+            if a_logged_in_user_token and user_with_id.logged_in == 1:
 
                 #check if business is there
-                if Business.id_exists(id):
+                found_business = Business.query.filter_by(id=id).first()
+                if found_business:
                     
-                    #invoke delete method of business class
-                    Business.delete(id)
+                    #Check if the user is the one who created the business
+                    if found_business.user_id == user_id:
+                        #delete the business
+                        db.session.delete(found_business)
+                        db.session.commit()
 
-                    return make_response(jsonify({'Message': 'Business deleted'})), 201
+                        return make_response(jsonify({'Message': 'Business deleted'})), 201
+                    else:
+                        return make_response(jsonify({'Message': 'Sorry you are not allowed to delete this business'})), 200
                 else:
                     return make_response(jsonify({'Message': 'Business was not found'})), 404
             else:
@@ -226,29 +328,53 @@ def create_app(config_name):
             auth_token = ''
         
         if auth_token:
+            #decode the token that was stored after login to extract the user id
+            user_id = User.decode_token(auth_token)
+
+            if user_id == "Expired token. Please login to get a new token":
+                return make_response(jsonify(
+                                    {'Token Error': " Token Expired. Please login to get a new one"}
+                        )), 499
+
+            if user_id == "Invalid token. Please register or login":
+                return make_response(jsonify(
+                                    {'Token Error': " Invalid Token. Please login to get a new one"}
+                        )), 499
+
+            #check if token exists in the Loggedinuser table
+            a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+            #Use the user ID that was decoded from the token to extract
+            # the user so u can check if the logged in flag is set to 1
+            user_with_id = User.query.filter_by(id=int(user_id)).first()
+            #user_id = User.decode_token(auth_token)
+
             #try to see if you can get a user by a token
             # they are identified with
-            if User.get_user_by_token(auth_token) is not None:
+            if a_logged_in_user_token and user_with_id.logged_in == 1:
+                
                 #check if business is there
-                if Business.id_exists(id):
+                found_business = Business.query.filter_by(id=id).first()
+                if found_business:
                     # get the data that was sent in the request
                     data = request.get_json()
                     
-                    #invoke delete method of business class
-                    update_status = Business.update(id = id,
-                                                    name = data['name'],
-                                                    category = data['category'],
-                                                    location = data['location'])
-                    if update_status:
+                    #Begin to update the business
+                    found_business.name = data['name']
+                    found_business.category = data['category']
+                    found_business.location = data['location']
+
+                    try:
+                        db.session.commit()
                         return make_response(
                             jsonify(
                                 {'Message': 'Business updated to' + data['name']}
                             )
                         ), 201
-                    else:
+                    except Exception as e:
                         return make_response(
                             jsonify(
-                                {'Message': 'Failed to update business'}
+                                {'Message': 'Failed to update business because of ' + str(e)}
                             )
                         ), 500
                 else:
