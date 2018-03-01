@@ -379,13 +379,19 @@ def search_for_a_business_by_its_name():
             #check if q in the parameter strings
             if 'q' in request.args: 
                 # find the Business with a particular name
-                print("jjjjjjjjjjjjjjjjjjjjjjj0000000000llllllllll")
+                
                 business_to_find = Business.query.filter_by(name=request.args['q']).all()
-                        
+                   
                 if not business_to_find:
                     return make_response(jsonify({'Message': 'No business found'})), 404
                         
-                found_business_details = "found business"
+                found_business_details = []
+                for business in business_to_find:
+                    found_business_details.append({
+                        "name": business.name,
+                        "category": business.category
+                    })
+
                 return make_response(jsonify({'message':found_business_details})), 201
             else:
                 return make_response(jsonify({'Message': 'No search parameter found'})), 404
