@@ -2,7 +2,8 @@ from . import auth_blueprint
 
 from flask.views import MethodView
 from flask import make_response, request, jsonify, session
-from app.models import User, Loggedinuser
+from app.models.user import User
+from app.models.loggedinuser import Loggedinuser
 from app import db
 from flasgger import swag_from
 

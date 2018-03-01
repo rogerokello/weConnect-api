@@ -3,8 +3,13 @@ from app import db, current_app
 from flask_bcrypt import Bcrypt
 import jwt
 from datetime import datetime, timedelta
+#from app.v1.models.user import User
+#from app.v1.models.loggedinuser import Loggedinuser
+#from v1.models.business import Business
+#from app.v1.models.review import Review
 
 class User(db.Model):
+    __tablename__ = 'users'
     #the fields of the User table
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -63,67 +68,3 @@ class User(db.Model):
         except jwt.InvalidTokenError:
             # the token is invalid, return an error string
             return "Invalid token. Please register or login"
-
-class Loggedinuser(db.Model):
-    #fields
-    id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.Text())
-
-    # create token object
-    def __init__(self, token):
-        self.token = token
-
-    #Create a class method to add the token
-    def add(self):
-       db.session.add(self)
-       db.session.commit()
-
-    @classmethod
-    def delete_token(self, token):
-        db.session.delete(token)
-        db.session.commit()
-
-class Business(db.Model): 
-
-    #the fields of the Business table
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
-    category = db.Column(db.String(64))
-    location = db.Column(db.String(64))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    reviews = db.relationship('Review', backref='creator', lazy='dynamic')
-
-    #initialise business   
-    def __init__(self, name, category, location):
-        """Initialize the business with a name, category and location."""
-        self.name = name
-        self.category = category
-        self.location = location
-
-    def add(self):
-        db.session.add(self)
-        db.session.commit()
-
-
-
-class Review(db.Model):
-    #the fields of the Review table
-    id = db.Column(db.Integer, primary_key=True)
-    review_summary = db.Column(db.String(64), index=True, unique=True)
-    review_description = db.Column(db.String(150))
-    star_rating = db.Column(db.String(10))
-    business_id = db.Column(db.Integer, db.ForeignKey('business.id'))
-
-    # create a review object
-    def __init__(self, review_summary, review_description,
-                star_rating, business_id):
-        self.review_summary = review_summary
-        self.review_description = review_description
-        self.star_rating = star_rating
-        self.business_id = business_id
-
-
-
-
-
-

@@ -21,9 +21,9 @@ manager.add_command('db', MigrateCommand)
 # define our command for testing called "test"
 # Usage: python manage.py test
 @manager.command
-def test():
+def testv1():
     """Runs the unit tests without test coverage."""
-    tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
+    tests = unittest.TestLoader().discover('./tests/api/v1', pattern='test*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0

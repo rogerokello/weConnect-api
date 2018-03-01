@@ -29,24 +29,19 @@ responses:
       properties:
         "Message":
           type: string
-          enum:
-            - "Business was not found"
+
   499:
     description: A token error, invalid token or missing token
     schema: 
       type: object
       properties:
-        Token Error:
+        "Token Error":
           type: string
-          enum:
-            - "Invalid Token"
-            - "Token required"
+
   500:
     description: An unknown internal server error
     schema: 
       type: object
       properties:
-        Message:
+        "Message":
           type: string
-          enum:
-            - "Failed to update business"
