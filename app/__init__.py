@@ -14,7 +14,7 @@ def create_app(config_name):
             'title': 'we-connect-you-api',
             'description': "The we-connect-you app allows you to register a business and\
             make reviews of other businesses",
-            'basePath': '/app/v1/',
+            'basePath': '/',
             'version': '0.0.1',
             'contact': {
                 'Developer': 'Roger Okello',
