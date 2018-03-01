@@ -3,7 +3,6 @@ from app.models.user import User
 from app.models.loggedinuser import Loggedinuser
 from app.models.business import Business
 from app.models.review import Review, db
-#from app.models import User, Loggedinuser, Business, db
 from flasgger import swag_from
 from flask import request, jsonify, make_response
 
@@ -39,7 +38,6 @@ def review_a_business_given_its_id(id):
         #Use the user ID that was decoded from the token to extract
         # the user so u can check if the logged in flag is set to 1
         user_with_id = User.query.filter_by(id=int(user_id)).first()
-        #user_id = User.decode_token(auth_token)
 
         #try to see if you can get a user by a token
         # they are identified with
@@ -113,7 +111,6 @@ def get_business_reviews_given_its_id(id):
         #Use the user ID that was decoded from the token to extract
         # the user so u can check if the logged in flag is set to 1
         user_with_id = User.query.filter_by(id=int(user_id)).first()
-        #user_id = User.decode_token(auth_token)
 
         #try to see if you can get a user by a token
         # they are identified with

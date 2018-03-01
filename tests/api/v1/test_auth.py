@@ -263,9 +263,9 @@ class AuthTestCase(unittest.TestCase):
         result = json.loads(res.data.decode())
 
         # assert that the request contains a success message and 
-        # a 201 status code
+        # a 401 status code
         self.assertEqual(result['message'],
-                        "Invalid username, Please try again")
+                        "Invalid username or password, Please try again")
         self.assertEqual(res.status_code, 401)
 
     def test_user_logout_works(self):

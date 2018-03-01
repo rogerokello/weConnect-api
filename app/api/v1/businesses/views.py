@@ -2,7 +2,6 @@ from . import businesses_blueprint
 from app.models.user import User
 from app.models.loggedinuser import Loggedinuser
 from app.models.business import Business, db
-#from app.models import User, Loggedinuser, Business, db
 from flasgger import swag_from
 from flask import request, jsonify, make_response
 
@@ -13,7 +12,7 @@ def register_a_business():
     # get authorisation header
     auth_header = request.headers.get('Authorization')
     if auth_header:
-        #pick token after splitting with the bearre
+        #pick token after splitting with the bearer
         auth_token = auth_header.split(" ")[1]
     else:
         auth_token = ''
@@ -126,11 +125,12 @@ def get_all_businesses():
                         'id': a_business.id,
                         'name': a_business.name,
                         'location': a_business.location,
+                        'category': a_business.location,
                         'user_id': a_business.user_id
                     })
 
                 response = {
-                    'Your current businesses are: ': found_business_list
+                    'Businesses': found_business_list
                 }
                 return make_response(jsonify(response)), 201
             else:
@@ -257,7 +257,7 @@ def delete_a_business_by_id(id):
 
                     return make_response(jsonify({'Message': 'Business deleted'})), 201
                 else:
-                    return make_response(jsonify({'Message': 'Sorry you are not allowed to delete this business'})), 200
+                    return make_response(jsonify({'Message': 'Sorry you are not allowed to delete this business'})), 301
             else:
                 return make_response(jsonify({'Message': 'Business was not found'})), 404
         else:

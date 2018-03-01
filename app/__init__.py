@@ -1,5 +1,4 @@
 from flask import Flask, current_app, session
-#from . import db
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flasgger import Swagger, swag_from
@@ -50,10 +49,7 @@ def create_app(config_name):
     #apply the configuration settings on app
     config[config_name].init_app(app)
 
-    #from app.v1.models.business import Business, Review, User, Loggedinuser
-    from app.models.review import Review
-    from app.models.user import User
-    from app.models.loggedinuser import Loggedinuser
+    
     db.init_app(app)
     from flask import request, jsonify, make_response
 

@@ -53,8 +53,6 @@ class RegistrationView(MethodView):
             return make_response(jsonify(response)), 400
 
         # Check to see if the user already exists
-        #user = User.get_by_username(username=data['username'])
-        # Query to see if the user already exists
         user = User.query.filter_by(username=data['username']).first()
 
         if not user:
@@ -105,9 +103,6 @@ class LoginView(MethodView):
                 return make_response(jsonify(response)), 400
 
             # Get the user object using their user name
-            #user = User.get_by_username(username=data['username'])
-            # Query to see if the user already exists
-            #user = User.query.filter_by(username=data['username']).first()
             found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
             # Try to authenticate the found user using their password
             if found_user:
@@ -137,22 +132,15 @@ class LoginView(MethodView):
                 if access_token:
                     response = {
                         'message': 'You logged in successfully.',
-                        'access_token': access_token.decode()# The token is
-                        # a string so decode will not work until you pass it
-                        # into decode_token from the user model
+                        'access_token': access_token.decode()
                     }
 
-                    #change the login state
-                    #user.login_user()
                     #return a successful response
                     return make_response(jsonify(response)), 200
-                
-                
-
             else:
                 # User does not exist. Therefore, we return an error message
                 response = {
-                    'message': 'Invalid username, Please try again'
+                    'message': 'Invalid username or password, Please try again'
                 }
                 return make_response(jsonify(response)), 401
 
@@ -193,7 +181,7 @@ class LogoutView(MethodView):
         try:
             # get auth token
             auth_header = request.headers.get('Authorization')
-            #print(auth_header)
+
             if auth_header:
                 auth_token = auth_header.split(" ")[1]
             else:
@@ -212,11 +200,7 @@ class LogoutView(MethodView):
                 
                 #check if that user is currently logged in and
                 # the token is stored table with tokens
-                if a_logged_in_user_token and user_with_id.logged_in == 1:
-                    
-                    #
-                     #perform these actions to logout
-                    #
+                if a_logged_in_user_token:# and user_with_id.logged_in == 1:
 
                     #remove the token from the token table
                     Loggedinuser.delete_token(a_logged_in_user_token)
@@ -225,11 +209,11 @@ class LogoutView(MethodView):
                     user_with_id.logged_in = 0
                     user_with_id.save()
 
-                    #a_user.logout_user()
+                    # create the response
                     response = {
                         'message': 'Logout Successful'
                     }
-                    #make and send the response
+                    # send the response
                     return make_response(jsonify(response)), 201
                 else:
                     #log out user if not already logged out
@@ -260,12 +244,12 @@ class Reset_passwordView(MethodView):
         try:
             # get auth token
             auth_header = request.headers.get('Authorization')
-            #print(auth_header)
+            
             if auth_header:
                 auth_token = auth_header.split(" ")[1]
             else:
                 auth_token = ''
-            #print(auth_token + "token")
+            
             if auth_token:
                 if request.is_json:
                     data = request.get_json()
@@ -278,7 +262,8 @@ class Reset_passwordView(MethodView):
                     #make and send the response
                     return make_response(jsonify(response)), 400
 
-                #decode the token that was stored after login to extract the user id
+                #decode the token that was stored after login to 
+                # extract the user id
                 user_id = User.decode_token(auth_token)
 
                 #check if token exists in the Loggedinuser table
@@ -288,11 +273,10 @@ class Reset_passwordView(MethodView):
                 # the user so u can check if the logged in flag is set to 1
                 user_with_id = User.query.filter_by(id=int(user_id)).first()
                 
-                #print(auth_token)
+                
                 if a_logged_in_user_token and user_with_id.logged_in == 1:
-                    #reset the user password
-                    #return_message = a_user.reset_password(str(your_previous_password),
-                                            #str(your_new_password))
+                    #Reset the user password 
+                    
                     
                     #check if the user with that id and password exist
                     found_user = User.query.filter_by(id=int(user_id), password=str(your_previous_password)).first()
