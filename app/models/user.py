@@ -1,27 +1,17 @@
-#from .db import businesses, reviews, users, blacklisted_tokens
 from app import db, current_app
 from flask_bcrypt import Bcrypt
 import jwt
 from datetime import datetime, timedelta
-#from app.v1.models.user import User
-#from app.v1.models.loggedinuser import Loggedinuser
-#from v1.models.business import Business
-#from app.v1.models.review import Review
+
 
 class User(db.Model):
     __tablename__ = 'users'
-    #the fields of the User table
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(64))
     logged_in = db.Column(db.Integer)
     businesses = db.relationship('Business', backref='creator', lazy='dynamic')
 
-    # create user object
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.logged_in = 0
 
     #Create a method to add the business
     def add(self):

@@ -106,14 +106,6 @@ class LoginView(MethodView):
             found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
             # Try to authenticate the found user using their password
             if found_user:
-                
-                #check if user is already logged in
-                if found_user.logged_in == 1:
-                    response = {
-                        'message': 'No need you are already logged in'
-                    }
-                    #make and send the response
-                    return make_response(jsonify(response)), 303
 
                 #change the logged in flag to 1
                 found_user.logged_in = 1

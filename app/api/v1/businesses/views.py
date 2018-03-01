@@ -239,7 +239,7 @@ def delete_a_business_by_id(id):
         #Use the user ID that was decoded from the token to extract
         # the user so u can check if the logged in flag is set to 1
         user_with_id = User.query.filter_by(id=int(user_id)).first()
-        #user_id = User.decode_token(auth_token)
+        
 
         #try to see if you can get a user by a token
         # they are identified with
@@ -299,7 +299,7 @@ def update_a_business_given_its_id(id):
         #Use the user ID that was decoded from the token to extract
         # the user so u can check if the logged in flag is set to 1
         user_with_id = User.query.filter_by(id=int(user_id)).first()
-        #user_id = User.decode_token(auth_token)
+        
 
         #try to see if you can get a user by a token
         # they are identified with
@@ -370,7 +370,7 @@ def search_for_a_business_by_its_name():
         #Use the user ID that was decoded from the token to extract
         # the user so u can check if the logged in flag is set to 1
         user_with_id = User.query.filter_by(id=int(user_id)).first()
-        #user_id = User.decode_token(auth_token)
+        
 
         #try to see if you can get a user by a token
         # they are identified with
@@ -380,7 +380,7 @@ def search_for_a_business_by_its_name():
             if 'q' in request.args: 
                 # find the Business with a particular name
                 
-                business_to_find = Business.query.filter_by(name=request.args['q']).all()
+                business_to_find = Business.query.filter(Business.name.ilike('%'+request.args['q']+'%'))
                    
                 if not business_to_find:
                     return make_response(jsonify({'Message': 'No business found'})), 404

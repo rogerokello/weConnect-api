@@ -2,14 +2,9 @@ from app import db, current_app
 from flask_bcrypt import Bcrypt
 import jwt
 
-#from app.v1.models.user import User
-#from app.v1.models.loggedinuser import Loggedinuser
-#from app.v1.models.business import Business
-#from app.v1.models.review import Review
 
 class Loggedinuser(db.Model):
     __tablename__ = 'loggedinusers'
-    #fields
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.Text())
 
