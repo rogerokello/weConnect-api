@@ -1,4 +1,4 @@
-Endpoint to update business information using an id value
+Endpoint to get business information using an id value
 ---
 tags:
   - Business
@@ -16,12 +16,12 @@ parameters:
 
 responses:
   201:
-    description: Business detail update successful
+    description: Business found
     schema: 
       type: object
       properties:
-        "Message":
-          type: string
+        "Business":
+          type: object
   404:
     description: No businesses found
     schema: 
@@ -41,12 +41,3 @@ responses:
           enum:
             - "Invalid Token"
             - "Token required"
-  500:
-    description: An unknown internal server error
-    schema: 
-      type: object
-      properties:
-        Message:
-          type: string
-          enum:
-            - "Failed to update business"

@@ -37,15 +37,15 @@ class BusinessTestCase(unittest.TestCase):
 
         #bind the app context
         with self.app.app_context():
-            pass
+            # create all tables
+            db.create_all()
 
     def tearDown(self):
         """teardown all initialized variables."""
         with self.app.app_context():
-            # delete database contents
-            db.businesses.clear()
-            db.reviews.clear()
-            db.users.clear()
+            # drop all tables
+            db.session.remove()
+            db.drop_all()
 
     def register_user(self, username="roger", password="okello"):
         """This helper method helps register a test user."""
@@ -233,7 +233,7 @@ class BusinessTestCase(unittest.TestCase):
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
 
-        response = self.client().get('/businesses/0',
+        response = self.client().get('/businesses/1',
                                     headers=dict(Authorization="Bearer " + access_token)
                                 )
 
@@ -252,7 +252,7 @@ class BusinessTestCase(unittest.TestCase):
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
 
-        response = self.client().get('/businesses/0',
+        response = self.client().get('/businesses/1',
                                     headers=dict(Authorization="Bearer " + access_token)
                                 )
 
@@ -271,7 +271,7 @@ class BusinessTestCase(unittest.TestCase):
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
 
-        response = self.client().get('/businesses/0',
+        response = self.client().get('/businesses/1',
                                     #headers=dict(Authorization="Bearer " + access_token)
                                 )
 
@@ -316,7 +316,7 @@ class BusinessTestCase(unittest.TestCase):
                                 content_type='application/json')
         
         #delete the business by its id
-        response = self.client().delete('/businesses/0',
+        response = self.client().delete('/businesses/1',
                                         headers=dict(Authorization="Bearer " + access_token)
                                         )
 
@@ -325,6 +325,7 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Business deleted string in returned json response
         self.assertIn('Business deleted', str(response.data))
+
 
     def test_api_can_remove_a_business_by_id_when_no_business_with_id_found(self):
         """Test the API can remove a business given an id works when id is not found (DELETE request)"""
@@ -341,6 +342,11 @@ class BusinessTestCase(unittest.TestCase):
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
         
+        #delete the business by its id
+        self.client().delete('/businesses/1',
+                                        headers=dict(Authorization="Bearer " + access_token)
+                                        )
+
         #delete the business by its id
         response = self.client().delete('/businesses/1',
                                         headers=dict(Authorization="Bearer " + access_token)
@@ -420,7 +426,7 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         # Edit business 
-        response = self.client().put('/businesses/0',
+        response = self.client().put('/businesses/1',
                             headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.edited_business),
                             content_type='application/json')
@@ -447,12 +453,12 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         # Edit business 
-        response = self.client().put('/businesses/0',
+        response = self.client().put('/businesses/1',
                             #headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.edited_business),
                             content_type='application/json')
 
-        #check that a 201 response status code was returned
+        #check that a 499 response status code was returned
         self.assertEqual(response.status_code, 499)
 
         # check that Megatrends string in returned json response
@@ -474,7 +480,7 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         #make the review
-        response = self.client().post('/businesses/0/reviews',
+        response = self.client().post('/businesses/1/reviews',
                             headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business_review),
                             content_type='application/json')
@@ -484,7 +490,6 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Good stuff string in returned json response
         self.assertIn('Good stuff', str(response.data))
-
 
     def test_api_can_get_all_business_review(self):
         """Test the API can get all business reviews (GET request)"""
@@ -502,15 +507,43 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         #make the review
-        self.client().post('/businesses/0/reviews',
+        self.client().post('/businesses/1/reviews',
                             headers=dict(Authorization="Bearer " + access_token),
                             data=json.dumps(self.a_business_review),
                             content_type='application/json')
 
         #get all the reviews
-        response = self.client().get('/businesses/0/reviews',
+        response = self.client().get('/businesses/1/reviews',
                                     headers=dict(Authorization="Bearer " + access_token)
                                     )
 
         # check that Good stuff string in returned json response
         self.assertIn('Good stuff', str(response.data))
+
+    def test_api_can_search_for_business_using_a_name_by_param_q(self):
+        "Test that the api can search for a business using the name q"
+        """Test the API can get all business reviews (GET request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        #first create a business
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        #Search using the name
+        response = self.client().get('/businesses/search?q=Xedrox',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            content_type='application/json')
+
+        # check that Good stuff string in returned json response
+        self.assertIn('Xedrox', str(response.data)) 
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)  
+

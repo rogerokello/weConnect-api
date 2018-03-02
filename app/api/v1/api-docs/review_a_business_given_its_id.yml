@@ -1,4 +1,4 @@
-Endpoint to get all of a business's reviews
+Endpoint to review business information using business id
 ---
 tags:
   - Review
@@ -13,24 +13,40 @@ parameters:
     type: string
     in: path
     required: true
+  - name: body
+    description: This contains review details
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "review_summary"
+        - "review_description"
+        - "star_rating"
+      properties:
+        review_summary:
+          type: "string"
+          example: "Well established business"
+        review_description:
+          type: "string"
+          example: "Several people have bought things from there"
+        star_rating:
+          type: "string"
+          example: "6"
 
 responses:
   201:
-    description: Businesses found
+    description: Business review successful
     schema: 
       type: object
       properties:
-        "Current business reviews are: ":
-          type: array
+        "Created review: ":
+          type: string
   404:
     description: No businesses found
     schema: 
       type: object
       properties:
-        "Message: ":
-          type: string
-          enum:
-            - "Sorry currently no reviews are present"
         "Message":
           type: string
           enum:

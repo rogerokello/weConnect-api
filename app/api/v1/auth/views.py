@@ -2,7 +2,9 @@ from . import auth_blueprint
 
 from flask.views import MethodView
 from flask import make_response, request, jsonify, session
-from app.models import User, TokenBlacklist
+from app.models.user import User
+from app.models.loggedinuser import Loggedinuser
+from app import db
 from flasgger import swag_from
 
 class RegistrationView(MethodView):
@@ -51,7 +53,7 @@ class RegistrationView(MethodView):
             return make_response(jsonify(response)), 400
 
         # Check to see if the user already exists
-        user = User.get_by_username(username=data['username'])
+        user = User.query.filter_by(username=data['username']).first()
 
         if not user:
             #user does not exist
@@ -60,7 +62,7 @@ class RegistrationView(MethodView):
                 username = data['username']
                 password = data['password']
                 user = User(username=username, password=password)
-                User.add(user)
+                user.add()
 
                 response = {
                     'message': 'You registered successfully. Please log in.'
@@ -101,41 +103,36 @@ class LoginView(MethodView):
                 return make_response(jsonify(response)), 400
 
             # Get the user object using their user name
-            user = User.get_by_username(username=data['username'])
-
+            found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
             # Try to authenticate the found user using their password
-            if user and user.check_password_is_valid(password=data['password']):
+            if found_user:
+
+                #change the logged in flag to 1
+                found_user.logged_in = 1
                 
+
                 # Generate the access token. This will be used as
                 # the authorization header
-                access_token = user.generate_token(user.get_user_id())
-                #store token in session variable called token
-                session['token'] = access_token.decode()
+                access_token = User.generate_token(found_user.id)
+                db.session.commit()
+
+                #store token in the loggedinusers table
+                loggedinuser = Loggedinuser(token=access_token.decode())
+                db.session.add(loggedinuser)
+                db.session.commit()
+                
                 if access_token:
                     response = {
                         'message': 'You logged in successfully.',
-                        'access_token': access_token.decode()# The token is
-                        # a string so decode will not work until you pass it
-                        # into decode_token from the user model
+                        'access_token': access_token.decode()
                     }
 
-                    #change the login state
-                    user.login_user()
                     #return a successful response
                     return make_response(jsonify(response)), 200
-                
-                #check if user is already logged in
-                if user.check_already_logged_in():
-                    response = {
-                        'message': 'No need you are already logged in'
-                    }
-                    #make and send the response
-                    return make_response(jsonify(response)), 303
-
             else:
                 # User does not exist. Therefore, we return an error message
                 response = {
-                    'message': 'Invalid username, Please try again'
+                    'message': 'Invalid username or password, Please try again'
                 }
                 return make_response(jsonify(response)), 401
 
@@ -154,8 +151,8 @@ class LoginView(MethodView):
                     'message': "Please supply a " + str(e)
                 }
 
-            # Return a server error using the HTTP Error Code 400 (Bad request)
-            return make_response(jsonify(response)), 400
+                # Return a server error using the HTTP Error Code 400 (Bad request)
+                return make_response(jsonify(response)), 400
 
 
             # Create a response containing an string error message
@@ -176,24 +173,48 @@ class LogoutView(MethodView):
         try:
             # get auth token
             auth_header = request.headers.get('Authorization')
-            #print(auth_header)
+
             if auth_header:
                 auth_token = auth_header.split(" ")[1]
             else:
                 auth_token = ''
-            #print(auth_token + "token")
+            
             if auth_token:
-                a_user = User.get_user_by_token(auth_token)
-                #print(auth_token)
-                if (User.get_user_by_token(auth_token) is not None) and (TokenBlacklist.check_if_in_list(auth_token) is False):
-                    #log out user if logged in
-                    #session.clear()
-                    TokenBlacklist.add(auth_token)
-                    #a_user.logout_user()
+                #decode the token that was stored after login to extract the user id
+                user_id = User.decode_token(auth_token)
+
+                if user_id == "Expired token. Please login to get a new token":
+                    return make_response(jsonify(
+                                {'Token Error': " Token Expired. Please login to get a new one"}
+                    )), 499
+
+                if user_id == "Invalid token. Please register or login":
+                    return make_response(jsonify(
+                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                    )), 499
+
+                #check if token exists in the Loggedinuser table
+                a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+                
+                #Use the user ID that was decoded from the token to extract
+                # the user so u can check if the logged in flag is set to 1
+                user_with_id = User.query.filter_by(id=int(user_id)).first()
+                
+                #check if the token is stored in the table with tokens
+                if a_logged_in_user_token:
+
+                    #remove the token from the token table
+                    Loggedinuser.delete_token(a_logged_in_user_token)
+
+                    #set the user logged in flag to 0
+                    user_with_id.logged_in = 0
+                    user_with_id.save()
+
+                    # create the response
                     response = {
                         'message': 'Logout Successful'
                     }
-                    #make and send the response
+                    # send the response
                     return make_response(jsonify(response)), 201
                 else:
                     #log out user if not already logged out
@@ -209,7 +230,7 @@ class LogoutView(MethodView):
         except Exception as e:
 
             response = {
-                'message': str(e)
+                'message': " Internal server error " + str(e)
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
@@ -224,17 +245,22 @@ class Reset_passwordView(MethodView):
         try:
             # get auth token
             auth_header = request.headers.get('Authorization')
-            #print(auth_header)
+            
             if auth_header:
                 auth_token = auth_header.split(" ")[1]
             else:
                 auth_token = ''
-            #print(auth_token + "token")
+            
             if auth_token:
                 if request.is_json:
                     data = request.get_json()
                     your_previous_password = data['previous_password']
                     your_new_password = data['new_password']
+                    if your_new_password == "":
+                        response = {
+                            "message": "Please supply a value for your new password"
+                        }
+                        return make_response(jsonify(response)), 400
                 else:
                     response = {
                         'message': 'Please supply json data'
@@ -242,14 +268,42 @@ class Reset_passwordView(MethodView):
                     #make and send the response
                     return make_response(jsonify(response)), 400
 
-                a_user = User.get_user_by_token(auth_token)
-                #print(auth_token)
-                if (User.get_user_by_token(auth_token) is not None) and (TokenBlacklist.check_if_in_list(auth_token) is False):
-                    #reset the user password
-                    return_message = a_user.reset_password(str(your_previous_password),
-                                            str(your_new_password))
+                #decode the token that was stored after login to 
+                # extract the user id
+                user_id = User.decode_token(auth_token)
+
+                if user_id == "Expired token. Please login to get a new token":
+                    return make_response(jsonify(
+                                {'Token Error': " Token Expired. Please login to get a new one"}
+                    )), 499
+
+                if user_id == "Invalid token. Please register or login":
+                    return make_response(jsonify(
+                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                    )), 499
+
+                #check if token exists in the Loggedinuser table
+                a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+                #Use the user ID that was decoded from the token to extract
+                # the user so u can check if the logged in flag is set to 1
+                user_with_id = User.query.filter_by(id=int(user_id)).first()
+                
+                
+                if a_logged_in_user_token and user_with_id.logged_in == 1:
+                    #Reset the user password 
                     
-                    if return_message == "success":
+                    
+                    #check if the user with that id and password exist
+                    found_user = User.query.filter_by(id=int(user_id), password=str(your_previous_password)).first()
+
+                    if found_user:
+                        #change the password
+                        found_user.password = str(your_new_password)
+                        
+                        # make your changes permanent(Commit)
+                        found_user.save()
+
                         response = {
                             'message': 'Password reset Successful'
                         }
@@ -257,17 +311,23 @@ class Reset_passwordView(MethodView):
                         return make_response(jsonify(response)), 201
                     else:
                         response = {
-                            'message': return_message
+                            'message': "Password reset unsuccessful"
                         }
                         #make and send the response
                         return make_response(jsonify(response)), 304
+                else:
+                    response = {
+                            'message': "Invalid previous password"
+                    }
+                        #make and send the response
+                    return make_response(jsonify(response)), 304
             else:
                 return make_response(jsonify({'Token Error': "Token required"})), 499
 
         except Exception as e:
 
             response = {
-                'message': str(e)
+                'message': " Internal server error " + str(e)
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)

@@ -1,12 +1,17 @@
-Endpoint to get all registered businesses
+Endpoint to get all of a business's reviews
 ---
 tags:
-  - Business
+  - Review
 parameters:
   - name: Authorization
     description: A json web token to be used for each request
     type: string
     in: header
+    required: true
+  - name: id
+    description: The unique id of the business
+    type: string
+    in: path
     required: true
 
 responses:
@@ -15,7 +20,7 @@ responses:
     schema: 
       type: object
       properties:
-        "Your current businesses are: ":
+        "Reviews":
           type: array
   404:
     description: No businesses found
@@ -25,7 +30,11 @@ responses:
         "Message: ":
           type: string
           enum:
-            - "Sorry currently no businesses are present"
+            - "Sorry currently no reviews are present"
+        "Message":
+          type: string
+          enum:
+            - "Business was not found"
   499:
     description: A token error, invalid token or missing token
     schema: 

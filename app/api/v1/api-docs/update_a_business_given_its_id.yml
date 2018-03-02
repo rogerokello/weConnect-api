@@ -1,7 +1,7 @@
-Endpoint to review business information using business id
+Endpoint to update business information using an id value
 ---
 tags:
-  - Review
+  - Business
 parameters:
   - name: Authorization
     description: A json web token to be used for each request
@@ -14,33 +14,33 @@ parameters:
     in: path
     required: true
   - name: body
-    description: This contains review details
+    description: a json object with business details to be modified
     in: body
     required: true
     schema:
       type: object
       required:
-        - "review_summary"
-        - "review_description"
-        - "star_rating"
+        - "name"
+        - "category"
+        - "location"
       properties:
-        review_summary:
+        name:
           type: "string"
-          example: "Well dstablished business"
-        review_description:
+          example: "Megatrends"
+        category:
           type: "string"
-          example: "Several people have bought things from there"
-        star_rating:
+          example: "Manufacture"
+        location:
           type: "string"
-          example: "6"
+          example: "Lira"
 
 responses:
   201:
-    description: Business review successful
+    description: Business detail update successful
     schema: 
       type: object
       properties:
-        "Created review: ":
+        "Message":
           type: string
   404:
     description: No businesses found
@@ -49,15 +49,19 @@ responses:
       properties:
         "Message":
           type: string
-          enum:
-            - "Business was not found"
+
   499:
     description: A token error, invalid token or missing token
     schema: 
       type: object
       properties:
-        Token Error:
+        "Token Error":
           type: string
-          enum:
-            - "Invalid Token"
-            - "Token required"
+
+  500:
+    description: An unknown internal server error
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string

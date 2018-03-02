@@ -1,4 +1,4 @@
-Endpoint to get business information using an id value
+Endpoint to get all registered businesses
 ---
 tags:
   - Business
@@ -8,29 +8,24 @@ parameters:
     type: string
     in: header
     required: true
-  - name: id
-    description: The unique id of the business
-    type: string
-    in: path
-    required: true
 
 responses:
   201:
-    description: Business found
+    description: Businesses found
     schema: 
       type: object
       properties:
-        "Business found":
-          type: object
+        "Businesses:":
+          type: array
   404:
     description: No businesses found
     schema: 
       type: object
       properties:
-        "Message":
+        "Message: ":
           type: string
           enum:
-            - "Business was not found"
+            - "Sorry currently no businesses are present"
   499:
     description: A token error, invalid token or missing token
     schema: 
