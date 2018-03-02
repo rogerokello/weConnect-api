@@ -14,7 +14,12 @@ def review_a_business_given_its_id(id):
     # get auth token
     auth_header = request.headers.get('Authorization')
     if auth_header:
-        auth_token = auth_header.split(" ")[1]
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except Exception as e:
+            return make_response(jsonify(
+                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+            )), 499
     else:
         auth_token = ''
         
@@ -87,7 +92,12 @@ def get_business_reviews_given_its_id(id):
     # get auth token
     auth_header = request.headers.get('Authorization')
     if auth_header:
-        auth_token = auth_header.split(" ")[1]
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except Exception as e:
+            return make_response(jsonify(
+                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+            )), 499
     else:
         auth_token = ''
         
