@@ -20,7 +20,7 @@ responses:
     schema: 
       type: object
       properties:
-        "Business found":
+        "Business":
           type: object
   404:
     description: No businesses found

@@ -26,7 +26,7 @@ parameters:
       properties:
         review_summary:
           type: "string"
-          example: "Well dstablished business"
+          example: "Well established business"
         review_description:
           type: "string"
           example: "Several people have bought things from there"
