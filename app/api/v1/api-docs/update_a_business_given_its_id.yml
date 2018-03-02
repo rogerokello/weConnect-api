@@ -13,6 +13,26 @@ parameters:
     type: string
     in: path
     required: true
+  - name: body
+    description: a json object with business details to be modified
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "name"
+        - "category"
+        - "location"
+      properties:
+        name:
+          type: "string"
+          example: "Megatrends"
+        category:
+          type: "string"
+          example: "Manufacture"
+        location:
+          type: "string"
+          example: "Lira"
 
 responses:
   201:

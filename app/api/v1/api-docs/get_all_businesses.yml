@@ -15,7 +15,7 @@ responses:
     schema: 
       type: object
       properties:
-        "Your current businesses are: ":
+        "Businesses:":
           type: array
   404:
     description: No businesses found

@@ -183,6 +183,16 @@ class LogoutView(MethodView):
                 #decode the token that was stored after login to extract the user id
                 user_id = User.decode_token(auth_token)
 
+                if user_id == "Expired token. Please login to get a new token":
+                    return make_response(jsonify(
+                                {'Token Error': " Token Expired. Please login to get a new one"}
+                    )), 499
+
+                if user_id == "Invalid token. Please register or login":
+                    return make_response(jsonify(
+                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                    )), 499
+
                 #check if token exists in the Loggedinuser table
                 a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
                 
@@ -190,9 +200,8 @@ class LogoutView(MethodView):
                 # the user so u can check if the logged in flag is set to 1
                 user_with_id = User.query.filter_by(id=int(user_id)).first()
                 
-                #check if that user is currently logged in and
-                # the token is stored table with tokens
-                if a_logged_in_user_token:# and user_with_id.logged_in == 1:
+                #check if the token is stored in the table with tokens
+                if a_logged_in_user_token:
 
                     #remove the token from the token table
                     Loggedinuser.delete_token(a_logged_in_user_token)
@@ -221,7 +230,7 @@ class LogoutView(MethodView):
         except Exception as e:
 
             response = {
-                'message': str(e)
+                'message': " Internal server error " + str(e)
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
@@ -247,6 +256,11 @@ class Reset_passwordView(MethodView):
                     data = request.get_json()
                     your_previous_password = data['previous_password']
                     your_new_password = data['new_password']
+                    if your_new_password == "":
+                        response = {
+                            "message": "Please supply a value for your new password"
+                        }
+                        return make_response(jsonify(response)), 400
                 else:
                     response = {
                         'message': 'Please supply json data'
@@ -257,6 +271,16 @@ class Reset_passwordView(MethodView):
                 #decode the token that was stored after login to 
                 # extract the user id
                 user_id = User.decode_token(auth_token)
+
+                if user_id == "Expired token. Please login to get a new token":
+                    return make_response(jsonify(
+                                {'Token Error': " Token Expired. Please login to get a new one"}
+                    )), 499
+
+                if user_id == "Invalid token. Please register or login":
+                    return make_response(jsonify(
+                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                    )), 499
 
                 #check if token exists in the Loggedinuser table
                 a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
@@ -291,13 +315,19 @@ class Reset_passwordView(MethodView):
                         }
                         #make and send the response
                         return make_response(jsonify(response)), 304
+                else:
+                    response = {
+                            'message': "Invalid previous password"
+                    }
+                        #make and send the response
+                    return make_response(jsonify(response)), 304
             else:
                 return make_response(jsonify({'Token Error': "Token required"})), 499
 
         except Exception as e:
 
             response = {
-                'message': str(e)
+                'message': " Internal server error " + str(e)
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)

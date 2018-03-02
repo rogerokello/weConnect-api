@@ -130,7 +130,7 @@ def get_business_reviews_given_its_id(id):
                                 'star_rating': a_review.star_rating
                             })
                     response = {
-                        'Current business reviews are: ': matching_reviews_found
+                        'Reviews': matching_reviews_found
                     }
                     return make_response(jsonify(response)), 201
                 else:

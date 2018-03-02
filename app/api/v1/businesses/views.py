@@ -196,7 +196,7 @@ def get_a_business_by_id(id):
                     'user_id': found_business.user_id
                 }
 
-                return make_response(jsonify({'Business found': business_as_a_dict})), 201
+                return make_response(jsonify({'Business': business_as_a_dict})), 201
             else:
                 return make_response(jsonify({'Message': 'Business was not found'})), 404
         else:
