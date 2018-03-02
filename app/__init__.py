@@ -49,8 +49,11 @@ def create_app(config_name):
     #apply the configuration settings on app
     config[config_name].init_app(app)
 
-    
+    #initialise sqlalchemy with setting in the app
     db.init_app(app)
+
+    #No need for these imports since routes now in
+    #blueprints
     from flask import request, jsonify, make_response
 
 
