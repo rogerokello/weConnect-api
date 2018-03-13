@@ -10,6 +10,7 @@ class Review(db.Model):
     review_description = db.Column(db.String(150))
     star_rating = db.Column(db.String(10))
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     #save the review
     def save(self):
