@@ -56,10 +56,14 @@ def register_a_business():
             category = data['category']
             location = data['location']
 
+            # Strip all white spaces from the name
+            # and name convert to upper case
+            name_in_upper_case = " ".join(name.split()).upper()
+
             a_user = User.query.get(int(user_id))
 
             #create a business object
-            a_business = Business(name=name,
+            a_business = Business(name=name_in_upper_case,
                                     category=category,
                                     location=location,
                                     creator=a_user)
