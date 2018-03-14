@@ -49,7 +49,7 @@ def review_a_business_given_its_id(id):
         if a_logged_in_user_token and user_with_id.logged_in == 1:
             #check if the business is there
             #check if business is there
-            found_business = Business.query.filter_by(id=id).first()
+            found_business = Business.query.get(id)
             if found_business:
                 # get the data that was sent in the request
                 data = request.get_json()
