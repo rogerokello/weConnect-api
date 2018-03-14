@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 class Business(db.Model): 
     __tablename__ = 'businesses'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
+    name = db.Column(db.String(64), index=True, unique=True)
     category = db.Column(db.String(64))
     location = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
