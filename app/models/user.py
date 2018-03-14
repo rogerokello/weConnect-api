@@ -11,6 +11,7 @@ class User(db.Model):
     password = db.Column(db.String(64))
     logged_in = db.Column(db.Integer)
     businesses = db.relationship('Business', backref='creator', lazy='dynamic')
+    reviews = db.relationship('Review', backref='creator', lazy='dynamic')
 
 
     #Create a method to add the business
