@@ -357,6 +357,25 @@ def update_a_business_given_its_id(id):
                 # and transform name to upper case
                 name = data['name']
                 name_in_upper_case = " ".join(name.split()).upper()
+
+                # Check if the biz name sent and tranformed to uppercase 
+                # is not the same as the biz name in the database
+                if found_business.name != name_in_upper_case:
+
+                    # Perform a search for that biz name to see if it
+                    # exists.
+                    duplicate_biz = Business.query.filter_by(
+                                                    name=name_in_upper_case
+                                                    ).first()
+
+                    # If it exists, reject the update of biz
+                    # because it will create duplicate business names
+                    if duplicate_biz:
+                        return make_response(
+                            jsonify(
+                                {'Message': 'Duplicate business'}
+                            )
+                        ), 401
                     
                 #Begin to update the business
                 found_business.name = name_in_upper_case
