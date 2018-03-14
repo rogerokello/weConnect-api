@@ -49,4 +49,13 @@ responses:
           enum:
             - "Invalid Token"
             - "Token required"
+  401:
+    description: A business already exists
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Duplicate business"
   
