@@ -63,7 +63,8 @@ def review_a_business_given_its_id(id):
                     review_summary = data['review_summary'],
                     review_description = data['review_description'],
                     star_rating = data['star_rating'],
-                    business_id = id
+                    creator = found_user,
+                    business = found_business
                 )
 
                 #add review to the database
