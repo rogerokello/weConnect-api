@@ -485,6 +485,12 @@ class BusinessTestCase(unittest.TestCase):
                             data=json.dumps(self.a_business_review),
                             content_type='application/json')
 
+        #make the same review
+        response = self.client().post('/businesses/1/reviews',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business_review),
+                            content_type='application/json')
+
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
 
