@@ -60,6 +60,19 @@ def register_a_business():
             # and name convert to upper case
             name_in_upper_case = " ".join(name.split()).upper()
 
+            # Check to see if business with that name exists before
+            # adding a new business
+            business_with_existing_name = Business.query.filter_by(
+                                            name=name_in_upper_case).first()
+
+            if business_with_existing_name:
+                message = "Duplicate business"
+                response = {
+                    'message': message
+                }
+                return make_response(jsonify(response)), 401
+
+
             a_user = User.query.get(int(user_id))
 
             #create a business object

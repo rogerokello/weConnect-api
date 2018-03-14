@@ -400,7 +400,7 @@ class BusinessTestCase(unittest.TestCase):
                                 content_type='application/json')
 
         # try to add the same business
-        self.client().post('/businesses',
+        response = self.client().post('/businesses',
                                 headers=dict(Authorization="Bearer " + access_token),
                                 data=json.dumps(self.a_business),
                                 content_type='application/json')
