@@ -61,10 +61,10 @@ def register_a_business():
             #create a business object
             a_business = Business(name=name,
                                     category=category,
-                                    location=location)
+                                    location=location,
+                                    creator=a_user)
 
             #add business to the persistent database
-            a_business.user_id = int(user_id)
             db.session.add(a_business)
             Business.add(a_business)
 
