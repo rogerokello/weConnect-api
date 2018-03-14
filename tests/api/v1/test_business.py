@@ -384,6 +384,33 @@ class BusinessTestCase(unittest.TestCase):
         # check that Token required in returned json response
         self.assertIn('Token required', str(response.data))
 
+    def test_business_with_same_name_cannot_be_created(self):
+        """ Test api refuses to create businesses with similar names """
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        # try to add the same business
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Duplicate business in returned json response
+        self.assertIn('Duplicate business', str(response.data))
+
     def test_api_can_remove_a_business_by_id_works_when_invalid_token_supplied(self):
         """Test the API can remove a business given an id works when invalid token is used (DELETE request)"""
         # register a test user, then log them in
