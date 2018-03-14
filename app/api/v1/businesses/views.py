@@ -352,9 +352,14 @@ def update_a_business_given_its_id(id):
             if found_business:
                 # get the data that was sent in the request
                 data = request.get_json()
+
+                # Remove white spaces from business name
+                # and transform name to upper case
+                name = data['name']
+                name_in_upper_case = " ".join(name.split()).upper()
                     
                 #Begin to update the business
-                found_business.name = data['name']
+                found_business.name = name_in_upper_case
                 found_business.category = data['category']
                 found_business.location = data['location']
 
