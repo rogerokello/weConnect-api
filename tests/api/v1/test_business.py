@@ -146,8 +146,8 @@ class BusinessTestCase(unittest.TestCase):
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
 
-        # check that Xedrox string in returned json response
-        self.assertIn('Xedrox', str(response.data))
+        # check that XEDROX string in returned json response
+        self.assertIn('XEDROX', str(response.data))
     
     def test_api_can_get_all_businesses_works_in_absence_of_businesses(self):
         """Test the API works when no businesses are available (GET request)"""
@@ -240,8 +240,8 @@ class BusinessTestCase(unittest.TestCase):
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
 
-        # check that Xedrox string in returned json response
-        self.assertIn('Xedrox', str(response.data))
+        # check that XEDROX string in returned json response
+        self.assertIn('XEDROX', str(response.data))
     
     def test_api_can_get_business_by_id_works_when_no_biz_exists(self):
         """Test the API can get a business by ID works when no biz exists (GET request)"""
@@ -547,8 +547,8 @@ class BusinessTestCase(unittest.TestCase):
                             headers=dict(Authorization="Bearer " + access_token),
                             content_type='application/json')
 
-        # check that Good stuff string in returned json response
-        self.assertIn('Xedrox', str(response.data)) 
+        # check that XEDROX string in returned json response
+        self.assertIn('XEDROX', str(response.data)) 
 
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)  
