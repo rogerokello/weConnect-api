@@ -47,9 +47,13 @@ def review_a_business_given_its_id(id):
         #try to see if you can get a user by a token
         # they are identified with
         if a_logged_in_user_token and user_with_id.logged_in == 1:
-            #check if the business is there
+
             #check if business is there
             found_business = Business.query.get(id)
+
+            #check if the user id from the decoded token exists in the db
+            found_user = User.query.get(int(user_id))
+
             if found_business:
                 # get the data that was sent in the request
                 data = request.get_json()
