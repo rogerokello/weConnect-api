@@ -9,6 +9,11 @@ class Review(db.Model):
     review_summary = db.Column(db.String(64))
     review_description = db.Column(db.String(150))
     star_rating = db.Column(db.String(10))
+    date_created = db.Column(
+        db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
