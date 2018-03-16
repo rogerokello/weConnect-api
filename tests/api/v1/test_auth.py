@@ -268,6 +268,26 @@ class AuthTestCase(unittest.TestCase):
                         "Invalid username or password, Please try again")
         self.assertEqual(res.status_code, 401)
 
+    def test_user_login_rejects_non_text_supplied_for_values(self):
+        "Test user login rejects non text supplied for values (POST request)"
+        #register a user
+        self.register_user()
+        #make a request to the register endpoint
+        res = self.client().post('/auth/login',
+                                data=json.dumps({"username":12,
+                                                "password":23ee45
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 401 status code
+        self.assertEqual(result['message'],
+                        "Invaid values supplied, Please try again with text values")
+        self.assertEqual(res.status_code, 401)
+
     def test_user_login_rejects_username_supplied_as_number(self):
         "Test user login rejects username supplied as a number (POST request)"
         #register a user
