@@ -275,7 +275,7 @@ class AuthTestCase(unittest.TestCase):
         #make a request to the register endpoint
         res = self.client().post('/auth/login',
                                 data=json.dumps({"username":12,
-                                                "password":23ee45
+                                                "password":2334
                                 }),
                                 content_type='application/json'
                                  )
