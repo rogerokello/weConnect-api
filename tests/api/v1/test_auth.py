@@ -171,6 +171,24 @@ class AuthTestCase(unittest.TestCase):
                         "Please supply a values for both username and password")
         self.assertEqual(res.status_code, 400)
 
+    def test_user_registration_rejects_non_string_supplied_for_username_or_password(self):
+        "Test user registration rejects non string supplied for username or password (POST request)"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                data=json.dumps({"username":12,
+                                                "password":12334
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply string values for both username and password")
+        self.assertEqual(res.status_code, 400)
+
     
     def test_user_login_works(self):
         """Test registered user can login. (POST request)"""
