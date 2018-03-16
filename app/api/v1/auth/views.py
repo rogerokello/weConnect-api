@@ -102,9 +102,17 @@ class LoginView(MethodView):
                 }
                 return make_response(jsonify(response)), 400
 
-            if isinstance(data['username'], int):
+
+            if (not isinstance(data['username'], str)) or (not isinstance(data['password'], str)):
+
+                if isinstance(data['username'], int) and isinstance(data['password'], str):
+                    response = {
+                        "message": "Invalid username, Please try again with a username that is not a number"
+                    }
+                    return make_response(jsonify(response)), 401
+
                 response = {
-                    "message": "Invalid username, Please try again with a username that is not a number"
+                    "message": "Invaid values supplied, Please try again with text values"
                 }
                 return make_response(jsonify(response)), 401
 
