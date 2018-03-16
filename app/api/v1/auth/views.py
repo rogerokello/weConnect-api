@@ -102,6 +102,12 @@ class LoginView(MethodView):
                 }
                 return make_response(jsonify(response)), 400
 
+            if isinstance(data['username'], int):
+                response = {
+                    "message": "Invalid username, Please try again with a username that is not a number"
+                }
+                return make_response(jsonify(response)), 401
+
             # Get the user object using their user name
             found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
             # Try to authenticate the found user using their password
