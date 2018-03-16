@@ -187,7 +187,7 @@ class AuthTestCase(unittest.TestCase):
         # a 201 status code
         self.assertEqual(result['message'],
                         "Please supply string values for both username and password")
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 401)
 
     
     def test_user_login_works(self):

@@ -52,6 +52,13 @@ class RegistrationView(MethodView):
             }
             return make_response(jsonify(response)), 400
 
+        if not isinstance(username, str) or not isinstance(password, str):
+            response = {
+                'message': 'Please supply string values for both username and password'
+            }
+               
+            return make_response(jsonify(response)), 401
+
         # Check to see if the user already exists
         user = User.query.filter_by(username=data['username']).first()
 
@@ -61,6 +68,7 @@ class RegistrationView(MethodView):
                 # Register the user
                 username = data['username']
                 password = data['password']
+
                 user = User(username=username, password=password)
                 user.add()
 
