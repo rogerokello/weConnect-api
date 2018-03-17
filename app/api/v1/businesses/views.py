@@ -50,6 +50,16 @@ def register_a_business():
             #tranform json data got into a dictionary
             data = request.get_json()
 
+            #check if the json data value has something that is not a string
+            for value in data.values():
+                if not isinstance(value, str):
+                    message = "Please supply only string values"
+                    response = {
+                        'message': message
+                    }
+                    return make_response(jsonify(response)), 401
+
+
             #extract data from each of the dictionary
             #values
             name = data['name']
