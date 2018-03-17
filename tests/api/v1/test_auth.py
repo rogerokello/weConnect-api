@@ -407,3 +407,21 @@ class AuthTestCase(unittest.TestCase):
         
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
+
+    def test_password_reset_rejects_when_values_supplied_not_strings(self):
+        """Test the API reset password component rejects when non string passwords supplied(POST request)"""
+        
+        response = self.client().post('/auth/reset-password',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                data = json.dumps({
+                                                'previous_password': 123,
+                                                'new_password': 123
+                                }),
+                                content_type='application/json')
+
+        # check that Token required string in returned json response
+        test_string = 'Sorry, password reset unsuccessful. Please supply string values'
+        self.assertIn(test_string, str(response.data))
+        
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
