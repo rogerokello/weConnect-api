@@ -17,6 +17,12 @@ class BusinessTestCase(unittest.TestCase):
                             'location' : 'Lira'
                             }
         
+        #create a dict to be used to add a new biz with values as numbers
+        self.a_business_with_some_values_as_numbers = {'name':'Xedrox',
+                            'category': 'IT',
+                            'location' : 908
+                            }
+
         #create a dict to be used to edit business
         self.edited_business = {'name':'Megatrends',
                                 'category': 'Confectionary',
@@ -95,6 +101,20 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Created business string in returned json response
         self.assertIn('Created business: ', str(response.data))
+
+    def test_new_business_with_some_non_string_values_cannot_be_added(self):
+        """Test the API can refuses to create a business when some values are not strings (POST request)"""
+        
+        response = self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                data=json.dumps(self.a_business_with_some_values_as_numbers),
+                                content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Created business string in returned json response
+        self.assertIn('Please supply only string values', str(response.data))
 
     def test_new_business_creation_rejects_when_token_absent(self):
         """Test the API rejects business creation in absence of token (POST request)"""
