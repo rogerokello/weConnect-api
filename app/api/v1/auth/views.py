@@ -280,6 +280,13 @@ class Reset_passwordView(MethodView):
                     data = request.get_json()
                     your_previous_password = data['previous_password']
                     your_new_password = data['new_password']
+
+                    if not isinstance(your_previous_password, str) or not isinstance(your_new_password, str):
+                        response = {
+                            "message": "Sorry, password reset unsuccessful. Please supply string values"
+                        }
+                        return make_response(jsonify(response)), 401
+
                     if your_new_password == "":
                         response = {
                             "message": "Please supply a value for your new password"
