@@ -53,7 +53,7 @@ class RegistrationView(MethodView):
             }
             return make_response(jsonify(response)), 400
 
-        # check if what was for username or password is not a string
+        # check if what was got from json for username or password is not a string
         if not isinstance(username, str) or not isinstance(password, str):
             response = {
                 'message': 'Please supply string values for both username and password'
