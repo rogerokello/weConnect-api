@@ -636,7 +636,6 @@ class BusinessTestCase(unittest.TestCase):
 
     def test_api_can_search_for_business_using_a_name_by_param_q(self):
         "Test that the api can search for a business using the name q"
-        """Test the API can get all business reviews (GET request)"""
         # register a test user, then log them in
         self.register_user()
         result = self.login_user()
@@ -663,7 +662,6 @@ class BusinessTestCase(unittest.TestCase):
 
     def test_api_can_filter_businesses_using_their_categories(self):
         "Test that the api can fiter businesses using their categories"
-        """Test the API can get all business reviews (GET request)"""
         # register a test user, then log them in
         self.register_user()
         result = self.login_user()
@@ -702,6 +700,50 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Construction string in returned json response
         self.assertIn('Construction', str(response.data)) 
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+    def test_api_can_filter_businesses_using_their_locations(self):
+        "Test that the api can fiter businesses using their locations"
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        #first create a business in the IT category
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Xedrox',
+                                    'category': 'IT',
+                                    'location' : 'Lira'
+                                }
+                            ),
+                            content_type='application/json')
+        
+        #Create another business located in Kampala
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Megatrends',
+                                    'category': 'Construction',
+                                    'location' : 'Kampala'
+                                }
+                            ),
+                            content_type='application/json')
+
+        #filter business using the location
+        response = self.client().get('/businesses/filter?categoryorlocation=construction',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            content_type='application/json')
+
+        # check that Kampala string in returned json response
+        self.assertIn('Kampala', str(response.data)) 
 
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)

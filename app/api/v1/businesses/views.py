@@ -491,3 +491,75 @@ def search_for_a_business_by_its_name():
                     )), 499 
     else:
         return make_response(jsonify({'Token Error': "Token required"})), 499
+
+#route to filter out businesses by their location or category
+@businesses_blueprint.route('/businesses/filter', methods=['GET'])
+#@swag_from('../api-docs/update_a_business_given_its_id.yml')
+def filter_out_businesses_by_location_or_category():
+
+    # get auth token
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except Exception as e:
+            return make_response(jsonify(
+                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+            )), 499
+    else:
+        auth_token = ''
+        
+    if auth_token:
+        #decode the token that was stored after login to extract the user id
+        user_id = User.decode_token(auth_token)
+
+        if user_id == "Expired token. Please login to get a new token":
+            return make_response(jsonify(
+                                {'Token Error': " Token Expired. Please login to get a new one"}
+                    )), 499
+
+        if user_id == "Invalid token. Please register or login":
+            return make_response(jsonify(
+                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                    )), 499
+
+        #check if token exists in the Loggedinuser table
+        a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+        #Use the user ID that was decoded from the token to extract
+        # the user so u can check if the logged in flag is set to 1
+        user_with_id = User.query.filter_by(id=int(user_id)).first()
+        
+
+        #try to see if you can get a user by a token
+        # they are identified with
+        if a_logged_in_user_token and user_with_id.logged_in == 1:
+                
+            #check if categoryorlocation in the parameter strings
+            if 'categoryorlocation' in request.args: 
+                # find businesses in a particular category or location
+                
+                business_to_find = Business.query.filter(
+                    Business.category.ilike('%'+request.args['categoryorlocation']+'%') |
+                    Business.location.ilike('%'+request.args['categoryorlocation']+'%')
+                )
+                   
+                if not business_to_find:
+                    return make_response(jsonify({'Message': 'No business found'})), 404
+                        
+                found_business_details = []
+                for business in business_to_find:
+                    found_business_details.append({
+                        "name": business.name,
+                        "category": business.category
+                    })
+
+                return make_response(jsonify({'message':found_business_details})), 201
+            else:
+                return make_response(jsonify({'Message': 'No filter parameter found'})), 404
+        else:
+            return make_response(jsonify(
+                                {'Token Error': "Invalid Token"}
+                    )), 499 
+    else:
+        return make_response(jsonify({'Token Error': "Token required"})), 499
