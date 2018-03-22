@@ -425,7 +425,7 @@ def update_a_business_given_its_id(id):
 
 #route to search for a business using its name
 @businesses_blueprint.route('/businesses/search', methods=['GET'])
-#@swag_from('../api-docs/search_for_a_business_by_its_name.yml')
+@swag_from('../api-docs/search_for_a_business_by_its_name.yml')
 def search_for_a_business_by_its_name():
 
     # get auth token
