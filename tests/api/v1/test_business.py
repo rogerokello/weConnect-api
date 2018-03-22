@@ -18,7 +18,7 @@ class BusinessTestCase(unittest.TestCase):
                             }
         
         #create a dict to be used to add a new biz with values as numbers
-        self.a_business_with_some_values_as_numbers = {'name':'Xedrox',
+        self.a_business_with_some_values_as_numbers = {'name':123,
                             'category': 'IT',
                             'location' : 908
                             }
@@ -483,6 +483,33 @@ class BusinessTestCase(unittest.TestCase):
 
         # check that Megatrends string in returned json response
         self.assertIn('Megatrends', str(response.data))
+
+    def test_api_can_modify_a_business_profile_rejects_update_for_number_values(self):
+        """Test the API can modify a business profile rejects update for number values (PUT request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        # Edit business 
+        response = self.client().put('/businesses/1',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business_with_some_values_as_numbers),
+                            content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Megatrends string in returned json response
+        self.assertIn('Please supply only string values', str(response.data))
 
     def test_api_can_modify_a_business_profile_rejects_update_to_existing_biz_name(self):
         """Test the API can modify a business profile rejects when biz name is duplicate (PUT request)"""

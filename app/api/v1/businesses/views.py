@@ -363,6 +363,15 @@ def update_a_business_given_its_id(id):
                 # get the data that was sent in the request
                 data = request.get_json()
 
+                #check if the json data value has something that is not a string
+                for value in data.values():
+                    if not isinstance(value, str):
+                        message = "Please supply only string values"
+                        response = {
+                            'message': message
+                        }
+                        return make_response(jsonify(response)), 401
+
                 # Remove white spaces from business name
                 # and transform name to upper case
                 name = data['name']
