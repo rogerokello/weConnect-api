@@ -551,7 +551,8 @@ def filter_out_businesses_by_location_or_category():
                 for business in business_to_find:
                     found_business_details.append({
                         "name": business.name,
-                        "category": business.category
+                        "category": business.category,
+                        "location": business.location
                     })
 
                 return make_response(jsonify({'message':found_business_details})), 201
