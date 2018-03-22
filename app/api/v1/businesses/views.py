@@ -425,7 +425,7 @@ def update_a_business_given_its_id(id):
 
 #route to search for a business using its name
 @businesses_blueprint.route('/businesses/search', methods=['GET'])
-#@swag_from('../api-docs/update_a_business_given_its_id.yml')
+#@swag_from('../api-docs/search_for_a_business_by_its_name.yml')
 def search_for_a_business_by_its_name():
 
     # get auth token
@@ -494,7 +494,7 @@ def search_for_a_business_by_its_name():
 
 #route to filter out businesses by their location or category
 @businesses_blueprint.route('/businesses/filter', methods=['GET'])
-#@swag_from('../api-docs/update_a_business_given_its_id.yml')
+#@swag_from('../api-docs/filter_out_businesses_by_location_or_category.yml')
 def filter_out_businesses_by_location_or_category():
 
     # get auth token
@@ -568,7 +568,7 @@ def filter_out_businesses_by_location_or_category():
 
 # route to get a limited number of businesses
 @businesses_blueprint.route('/businesses/paginate', methods=['GET'])
-#@swag_from('../api-docs/get_all_businesses.yml')
+#@swag_from('../api-docs/get_a_limited_number_of_businesses.yml')
 def get_a_limited_number_of_businesses():
 
     # get auth token
