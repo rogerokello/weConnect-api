@@ -568,7 +568,7 @@ def filter_out_businesses_by_location_or_category():
 
 # route to get a limited number of businesses
 @businesses_blueprint.route('/businesses/paginate', methods=['GET'])
-#@swag_from('../api-docs/get_a_limited_number_of_businesses.yml')
+@swag_from('../api-docs/get_a_limited_number_of_businesses.yml')
 def get_a_limited_number_of_businesses():
 
     # get auth token
