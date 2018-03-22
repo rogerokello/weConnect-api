@@ -32,14 +32,6 @@ responses:
           enum:
            - "No business found"
            - "No search parameter found"
-  401:
-    description: A duplicate business
-    schema: 
-      type: object
-      properties:
-        "Message":
-          type: string
-
   499:
     description: A token error, invalid token or missing token
     schema: 
