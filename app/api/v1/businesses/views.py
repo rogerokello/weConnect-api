@@ -564,3 +564,98 @@ def filter_out_businesses_by_location_or_category():
                     )), 499 
     else:
         return make_response(jsonify({'Token Error': "Token required"})), 499
+
+
+# route to get a limited number of businesses
+@businesses_blueprint.route('/businesses/paginate', methods=['GET'])
+#@swag_from('../api-docs/get_all_businesses.yml')
+def get_a_limited_number_of_businesses():
+
+    # get auth token
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except Exception as e:
+            return make_response(jsonify(
+                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+            )), 499
+    else:
+        auth_token = ''
+        
+    if auth_token:
+
+        #decode the token that was stored after login to extract the user id
+        user_id = User.decode_token(auth_token)
+
+        if user_id == "Expired token. Please login to get a new token":
+            return make_response(jsonify(
+                                {'Token Error': " Token Expired. Please login to get a new one"}
+                    )), 499
+
+        if user_id == "Invalid token. Please register or login":
+            return make_response(jsonify(
+                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                    )), 499
+
+        #check if token exists in the Loggedinuser table
+        a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+        #Use the user ID that was decoded from the token to extract
+        # the user so u can check if the logged in flag is set to 1
+        user_with_id = User.query.filter_by(id=int(user_id)).first()
+        user_id = User.decode_token(auth_token)
+
+        #try to see if you can get a user by a token
+        # they are identified with
+        if a_logged_in_user_token and user_with_id.logged_in == 1:
+
+            #check if limit parameter not in args
+            # if it is not, return an error response
+            if 'limit' not in request.args:
+                response = {
+                    'Message: ': 'Please specify a limit get parameter'
+                }
+                return make_response(jsonify(response)), 401
+
+            try:
+                limit = int(request.args['limit'])
+            except ValueError:
+                # limit parameter is not an integer so return an error response
+                # saying that it is not
+                response = {
+                    'Message: ':'Please specify the limit get parameter as an integer'
+                }
+                return make_response(jsonify(response)), 401
+
+            # get only the number of businesses specified by user
+            #current_businesses = Business.query.all()
+            current_businesses = Business.query.paginate(
+                                            per_page=limit, page=1, error_out=False)
+
+            found_business_list = []
+            if len(current_businesses.items) > 0:
+                for a_business in current_businesses.items:
+                    found_business_list. append({
+                        'id': a_business.id,
+                        'name': a_business.name,
+                        'location': a_business.location,
+                        'category': a_business.location,
+                        'user_id': a_business.user_id
+                    })
+
+                response = {
+                    'Businesses': found_business_list
+                }
+                return make_response(jsonify(response)), 201
+            else:
+                response = {
+                    'Message: ': 'Sorry currently no businesses are present'
+                }
+                return make_response(jsonify(response)), 404
+        else:
+            return make_response(jsonify(
+                                {'Token Error': "Invalid Token"}
+                    )), 499            
+    else:
+        return make_response(jsonify({'Token Error': "Token required"})), 499

@@ -811,7 +811,14 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         # check that only two businesses are returned
-        self.assertEqual(2, len(json.loads(response.data)["message"]))
+        # Along the way deserialise the data sent in the response
+        # and convert back to the dictionary sent and extract the 
+        # Businesses key to get the values which is a list.
+        # Count the number of elements in the list you extracted.
+        # Since you requested for 2, there should only be 2 list elements.
+        # Since iam using python 3.5, json.loads() needs to convert the response
+        # to a string before it can deserialise back to python object
+        self.assertEqual(2, len(json.loads(str(response.data, 'utf-8'))["Businesses"]))
 
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
