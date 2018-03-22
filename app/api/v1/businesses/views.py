@@ -628,12 +628,16 @@ def get_a_limited_number_of_businesses():
                 }
                 return make_response(jsonify(response)), 401
 
-            # get only the number of businesses specified by user
-            #current_businesses = Business.query.all()
+            #### Get only the number of businesses specified by user ####
+
+            # Use the error_out attribute as False to return an empty list 
+            # of attributes if the limit parameter exceeds the number of 
+            # records in the db
             current_businesses = Business.query.paginate(
                                             per_page=limit, page=1, error_out=False)
 
             found_business_list = []
+
             if len(current_businesses.items) > 0:
                 for a_business in current_businesses.items:
                     found_business_list. append({
