@@ -494,7 +494,7 @@ def search_for_a_business_by_its_name():
 
 #route to filter out businesses by their location or category
 @businesses_blueprint.route('/businesses/filter', methods=['GET'])
-#@swag_from('../api-docs/filter_out_businesses_by_location_or_category.yml')
+@swag_from('../api-docs/filter_out_businesses_by_location_or_category.yml')
 def filter_out_businesses_by_location_or_category():
 
     # get auth token
