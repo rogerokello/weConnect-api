@@ -171,6 +171,24 @@ class AuthTestCase(unittest.TestCase):
                         "Please supply a values for both username and password")
         self.assertEqual(res.status_code, 400)
 
+    def test_user_registration_rejects_non_string_supplied_for_username_or_password(self):
+        "Test user registration rejects non string supplied for username or password (POST request)"
+        #make a request to the register endpoint
+        res = self.client().post('/auth/register',
+                                data=json.dumps({"username":12,
+                                                "password":12334
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 201 status code
+        self.assertEqual(result['message'],
+                        "Please supply string values for both username and password")
+        self.assertEqual(res.status_code, 401)
+
     
     def test_user_login_works(self):
         """Test registered user can login. (POST request)"""
@@ -268,6 +286,46 @@ class AuthTestCase(unittest.TestCase):
                         "Invalid username or password, Please try again")
         self.assertEqual(res.status_code, 401)
 
+    def test_user_login_rejects_non_text_supplied_for_values(self):
+        "Test user login rejects non text supplied for values (POST request)"
+        #register a user
+        self.register_user()
+        #make a request to the register endpoint
+        res = self.client().post('/auth/login',
+                                data=json.dumps({"username":12,
+                                                "password":2334
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 401 status code
+        self.assertEqual(result['message'],
+                        "Invaid values supplied, Please try again with text values")
+        self.assertEqual(res.status_code, 401)
+
+    def test_user_login_rejects_username_supplied_as_number(self):
+        "Test user login rejects username supplied as a number (POST request)"
+        #register a user
+        self.register_user()
+        #make a request to the register endpoint using a number username
+        res = self.client().post('/auth/login',
+                                data=json.dumps({"username":123,
+                                                "password":""
+                                }),
+                                content_type='application/json'
+                                 )
+        # get the results returned in json format
+        result = json.loads(res.data.decode())
+
+        # assert that the request contains a success message and 
+        # a 401 status code
+        self.assertEqual(result['message'],
+                        "Invalid username, Please try again with a username that is not a number")
+        self.assertEqual(res.status_code, 401)
+
     def test_user_logout_works(self):
         """Test the logout works (POST request)"""
 
@@ -349,3 +407,21 @@ class AuthTestCase(unittest.TestCase):
         
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
+
+    def test_password_reset_rejects_when_values_supplied_not_strings(self):
+        """Test the API reset password component rejects when non string passwords supplied(POST request)"""
+        
+        response = self.client().post('/auth/reset-password',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                data = json.dumps({
+                                                'previous_password': 123,
+                                                'new_password': 123
+                                }),
+                                content_type='application/json')
+
+        # check that Token required string in returned json response
+        test_string = 'Sorry, password reset unsuccessful. Please supply string values'
+        self.assertIn(test_string, str(response.data))
+        
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)

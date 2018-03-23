@@ -46,11 +46,20 @@ class RegistrationView(MethodView):
             }
             return make_response(jsonify(response)), 400
 
+        #check if username or password is empty
         if data['username'] == "" or data['password'] == "":
             response = {
                 "message": "Please supply a values for both username and password"
             }
             return make_response(jsonify(response)), 400
+
+        # check if what was got from json for username or password is not a string
+        if not isinstance(username, str) or not isinstance(password, str):
+            response = {
+                'message': 'Please supply string values for both username and password'
+            }
+               
+            return make_response(jsonify(response)), 401
 
         # Check to see if the user already exists
         user = User.query.filter_by(username=data['username']).first()
@@ -61,6 +70,7 @@ class RegistrationView(MethodView):
                 # Register the user
                 username = data['username']
                 password = data['password']
+
                 user = User(username=username, password=password)
                 user.add()
 
@@ -101,6 +111,20 @@ class LoginView(MethodView):
                     "message": "Please supply json data"
                 }
                 return make_response(jsonify(response)), 400
+
+
+            if (not isinstance(data['username'], str)) or (not isinstance(data['password'], str)):
+
+                if isinstance(data['username'], int) and isinstance(data['password'], str):
+                    response = {
+                        "message": "Invalid username, Please try again with a username that is not a number"
+                    }
+                    return make_response(jsonify(response)), 401
+
+                response = {
+                    "message": "Invaid values supplied, Please try again with text values"
+                }
+                return make_response(jsonify(response)), 401
 
             # Get the user object using their user name
             found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
@@ -256,6 +280,13 @@ class Reset_passwordView(MethodView):
                     data = request.get_json()
                     your_previous_password = data['previous_password']
                     your_new_password = data['new_password']
+
+                    if not isinstance(your_previous_password, str) or not isinstance(your_new_password, str):
+                        response = {
+                            "message": "Sorry, password reset unsuccessful. Please supply string values"
+                        }
+                        return make_response(jsonify(response)), 401
+
                     if your_new_password == "":
                         response = {
                             "message": "Please supply a value for your new password"

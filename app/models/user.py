@@ -10,7 +10,13 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(64))
     logged_in = db.Column(db.Integer)
+    date_created = db.Column(
+        db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
     businesses = db.relationship('Business', backref='creator', lazy='dynamic')
+    reviews = db.relationship('Review', backref='creator', lazy='dynamic')
 
 
     #Create a method to add the business

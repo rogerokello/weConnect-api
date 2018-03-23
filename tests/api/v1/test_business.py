@@ -17,6 +17,12 @@ class BusinessTestCase(unittest.TestCase):
                             'location' : 'Lira'
                             }
         
+        #create a dict to be used to add a new biz with values as numbers
+        self.a_business_with_some_values_as_numbers = {'name':123,
+                            'category': 'IT',
+                            'location' : 908
+                            }
+
         #create a dict to be used to edit business
         self.edited_business = {'name':'Megatrends',
                                 'category': 'Confectionary',
@@ -96,6 +102,20 @@ class BusinessTestCase(unittest.TestCase):
         # check that Created business string in returned json response
         self.assertIn('Created business: ', str(response.data))
 
+    def test_new_business_with_some_non_string_values_cannot_be_added(self):
+        """Test the API can refuses to create a business when some values are not strings (POST request)"""
+        
+        response = self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + self.get_token()),
+                                data=json.dumps(self.a_business_with_some_values_as_numbers),
+                                content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Created business string in returned json response
+        self.assertIn('Please supply only string values', str(response.data))
+
     def test_new_business_creation_rejects_when_token_absent(self):
         """Test the API rejects business creation in absence of token (POST request)"""
         
@@ -146,8 +166,8 @@ class BusinessTestCase(unittest.TestCase):
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
 
-        # check that Xedrox string in returned json response
-        self.assertIn('Xedrox', str(response.data))
+        # check that XEDROX string in returned json response
+        self.assertIn('XEDROX', str(response.data))
     
     def test_api_can_get_all_businesses_works_in_absence_of_businesses(self):
         """Test the API works when no businesses are available (GET request)"""
@@ -240,8 +260,8 @@ class BusinessTestCase(unittest.TestCase):
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
 
-        # check that Xedrox string in returned json response
-        self.assertIn('Xedrox', str(response.data))
+        # check that XEDROX string in returned json response
+        self.assertIn('XEDROX', str(response.data))
     
     def test_api_can_get_business_by_id_works_when_no_biz_exists(self):
         """Test the API can get a business by ID works when no biz exists (GET request)"""
@@ -384,6 +404,33 @@ class BusinessTestCase(unittest.TestCase):
         # check that Token required in returned json response
         self.assertIn('Token required', str(response.data))
 
+    def test_business_with_same_name_cannot_be_created(self):
+        """ Test api refuses to create businesses with similar names """
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        # try to add the same business
+        response = self.client().post('/businesses',
+                                headers=dict(Authorization="Bearer " + access_token),
+                                data=json.dumps(self.a_business),
+                                content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Duplicate business in returned json response
+        self.assertIn('Duplicate business', str(response.data))
+
     def test_api_can_remove_a_business_by_id_works_when_invalid_token_supplied(self):
         """Test the API can remove a business given an id works when invalid token is used (DELETE request)"""
         # register a test user, then log them in
@@ -437,6 +484,67 @@ class BusinessTestCase(unittest.TestCase):
         # check that Megatrends string in returned json response
         self.assertIn('Megatrends', str(response.data))
 
+    def test_api_can_modify_a_business_profile_rejects_update_for_number_values(self):
+        """Test the API can modify a business profile rejects update for number values (PUT request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        # Edit business 
+        response = self.client().put('/businesses/1',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business_with_some_values_as_numbers),
+                            content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Megatrends string in returned json response
+        self.assertIn('Please supply only string values', str(response.data))
+
+    def test_api_can_modify_a_business_profile_rejects_update_to_existing_biz_name(self):
+        """Test the API can modify a business profile rejects when biz name is duplicate (PUT request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        # Add another business with a different name
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.edited_business),
+                            content_type='application/json')
+
+        # Edit first business added to have same name as an already
+        # existing business
+        response = self.client().put('/businesses/1',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.edited_business),
+                            content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Megatrends string in returned json response
+        self.assertIn('Duplicate business', str(response.data))
+
     def test_api_can_modify_a_business_profile_works_when_no_token_supplied(self):
         """Test the API can modify a business profile works when no token supplied (PUT request)"""
         # register a test user, then log them in
@@ -485,6 +593,12 @@ class BusinessTestCase(unittest.TestCase):
                             data=json.dumps(self.a_business_review),
                             content_type='application/json')
 
+        #make the same review
+        response = self.client().post('/businesses/1/reviews',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business_review),
+                            content_type='application/json')
+
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)
 
@@ -522,7 +636,6 @@ class BusinessTestCase(unittest.TestCase):
 
     def test_api_can_search_for_business_using_a_name_by_param_q(self):
         "Test that the api can search for a business using the name q"
-        """Test the API can get all business reviews (GET request)"""
         # register a test user, then log them in
         self.register_user()
         result = self.login_user()
@@ -541,9 +654,172 @@ class BusinessTestCase(unittest.TestCase):
                             headers=dict(Authorization="Bearer " + access_token),
                             content_type='application/json')
 
-        # check that Good stuff string in returned json response
-        self.assertIn('Xedrox', str(response.data)) 
+        # check that XEDROX string in returned json response
+        self.assertIn('XEDROX', str(response.data)) 
 
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)  
 
+    def test_api_can_filter_businesses_using_their_categories(self):
+        "Test that the api can fiter businesses using their categories"
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        #first create a business in the IT category
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Xedrox',
+                                    'category': 'IT',
+                                    'location' : 'Lira'
+                                }
+                            ),
+                            content_type='application/json')
+        
+        #Create another business in the Construction category
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Megatrends',
+                                    'category': 'Construction',
+                                    'location' : 'Lira'
+                                }
+                            ),
+                            content_type='application/json')
+
+        #filter business using the category
+        response = self.client().get('/businesses/filter?categoryorlocation=construction',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            content_type='application/json')
+
+        # check that Construction string in returned json response
+        self.assertIn('Construction', str(response.data)) 
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+    def test_api_can_filter_businesses_using_their_locations(self):
+        "Test that the api can fiter businesses using their locations"
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        #first create a business in the IT category
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Xedrox',
+                                    'category': 'IT',
+                                    'location' : 'Lira'
+                                }
+                            ),
+                            content_type='application/json')
+        
+        #Create another business located in Kampala
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Megatrends',
+                                    'category': 'Construction',
+                                    'location' : 'Kampala'
+                                }
+                            ),
+                            content_type='application/json')
+
+        #filter business using the location
+        response = self.client().get('/businesses/filter?categoryorlocation=construction',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            content_type='application/json')
+
+        # check that Kampala string in returned json response
+        self.assertIn('Kampala', str(response.data)) 
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+
+    def test_api_can_return_a_no_of_businesses_specified_by_user_using_get_param_limit(self):
+        "Test that the api can return a specified number of businesses"
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        #first create a business in the IT category
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Xedrox',
+                                    'category': 'IT',
+                                    'location' : 'Lira'
+                                }
+                            ),
+                            content_type='application/json')
+        
+        #Create another business located in Kampala
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Megatrends',
+                                    'category': 'Construction',
+                                    'location' : 'Kampala'
+                                }
+                            ),
+                            content_type='application/json')
+
+        #Create another business located in the US
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'Microsoft',
+                                    'category': 'IT',
+                                    'location' : 'United States of America'
+                                }
+                            ),
+                            content_type='application/json')
+
+        #Create another business located in Ireland
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(
+                                {
+                                    'name':'LinkedIn',
+                                    'category': 'IT',
+                                    'location' : 'Ireland Republic'
+                                }
+                            ),
+                            content_type='application/json')
+
+        #Return 2 businesses
+        response = self.client().get('/businesses/paginate?limit=2',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            content_type='application/json')
+
+        # check that only two businesses are returned
+        # Along the way deserialise the data sent in the response
+        # and convert back to the dictionary sent and extract the 
+        # Businesses key to get the values which is a list.
+        # Count the number of elements in the list you extracted.
+        # Since you requested for 2, there should only be 2 list elements.
+        # Since iam using python 3.5, json.loads() needs to convert the response
+        # to a string before it can deserialise back to python object
+        self.assertEqual(2, len(json.loads(str(response.data, 'utf-8'))["Businesses"]))
+
+        #check that a 201 response status code was returned
+        self.assertEqual(response.status_code, 201)
+    

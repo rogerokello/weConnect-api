@@ -10,7 +10,7 @@ An api to enable you manage your business and reviews. Please visit a prototype 
 2. Clone the app to your folder by issuing this command
 
     ```
-        $ git clone -b dev-v3-trial https://github.com/rogerokello/weconnect-practice.git
+        $ git clone -b dev-v4 https://github.com/rogerokello/weconnect-practice.git
     ```
     NB: Read these resources to install git: https://git-scm.com/downloads
 3. Navigate into cloned folder
@@ -53,14 +53,16 @@ An api to enable you manage your business and reviews. Please visit a prototype 
 -  GET /api/businesses/<businessId> # This gets a business
 -  POST /api/businesses/<businessId>/reviews # This makes a review for a review
 -  GET /api/businesses/<businessId>/reviews # This gets the reviews that belong to a business
+-  GET /api/businesses/search # This searches for a business using the business name with a get parameter q. Visit the api docs to verify how to use it
+-  GET /api/businesses/filter # This filters out businesses using category or location using get parameter categoryorlocation. Visit the api docs to verify how to use it
+-  GET /api/businesses/paginate # This limits the number of businesses returned using get parameter limit. Visit the api docs to verify how to use it
 9. API documentation and live API
--  You may visit the api documention for the non-persistent application live at https://we-connect-all.herokuapp.com/apidocs/ to have a feel of the api
--  Or You may visit the api documention for the non-persistent application live at https://we-connect-api-persistent.herokuapp.com/apidocs/ to have a feel of the api
+-  You may visit the api documention for the persistent application live at https://we-connect-api-persistent.herokuapp.com/apidocs/ to have a feel of the api
 
 ## How to test the flask application
 1. Create a folder weconnect on your computer
    
-2. Download the repository at https://github.com/rogerokello/weconnect-practice/tree/dev-v1 to your computer into the created folder
+2. Download the repository at https://github.com/rogerokello/weconnect-practice/tree/dev-v4 to your computer into the created folder
 
 3. Navigate into created folder
 

@@ -8,11 +8,11 @@ db = SQLAlchemy()
 def create_app(config_name):
     app = Flask(__name__)
     
-    #initialise app to use swagger for doc strings
-    swagger = Swagger(app)
-
     #get configuration settings to app
     app.config.from_object(config[config_name])
+
+    #initialise app to use swagger for doc strings
+    swagger = Swagger(app)
 
     #apply the configuration settings on app
     config[config_name].init_app(app)
