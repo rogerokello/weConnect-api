@@ -185,8 +185,8 @@ class BusinessTestCase(unittest.TestCase):
         #check that a 404 response status code was returned
         self.assertEqual(response.status_code, 404)
 
-        # check that Xedrox string in returned json response
-        self.assertIn('Sorry currently no businesses are present', str(response.data))
+        # check that an empty list is in returned json response
+        self.assertEqual([], json.loads(response.data.decode())['Message: '])
 
     def test_api_can_get_all_businesses_works_when_no_token_suppiled(self):
         """Test the API can get all businesses works when no token is supplied (GET request)"""
