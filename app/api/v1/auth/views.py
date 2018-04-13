@@ -21,18 +21,21 @@ class RegistrationView(MethodView):
                 data = request.get_json()
             else:
                 response = {
-                    "message": "Please supply json data"
+                    "message": "Please supply json data",
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 400
         except Exception as e:
             #check if json data conforms to right standard
             if "Failed to decode JSON object" in str(e):
                 response = {
-                    "message": "Please supply a correct format for your json data"
+                    "message": "Please supply a correct format for your json data",
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 400
             response = {
-                "message": str(e)
+                "message": str(e),
+                "status": "failure"
             }
             return make_response(jsonify(response)), 400
         
@@ -42,21 +45,24 @@ class RegistrationView(MethodView):
             password = data['password']
         except KeyError as missing_key:
             response = {
-                "message": "Please supply a " + str(missing_key)
+                "message": "Please supply a " + str(missing_key),
+                "status": "failure"
             }
             return make_response(jsonify(response)), 400
 
         #check if username or password is empty
         if data['username'] == "" or data['password'] == "":
             response = {
-                "message": "Please supply a values for both username and password"
+                "message": "Please supply a values for both username and password",
+                "status": "failure"
             }
             return make_response(jsonify(response)), 400
 
         # check if what was got from json for username or password is not a string
         if not isinstance(username, str) or not isinstance(password, str):
             response = {
-                'message': 'Please supply string values for both username and password'
+                'message': 'Please supply string values for both username and password',
+                "status": "failure"
             }
                
             return make_response(jsonify(response)), 401
@@ -75,14 +81,16 @@ class RegistrationView(MethodView):
                 user.add()
 
                 response = {
-                    'message': 'You registered successfully. Please log in.'
+                    'message': 'You registered successfully. Please log in.',
+                    "status": "success"
                 }
                 # return a response notifying the user that they registered successfully
                 return make_response(jsonify(response)), 201
             except Exception as e:
                 # An error occured, therefore return a string message containing the error
                 response = {
-                    'message': str(e)
+                    'message': str(e),
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
             
@@ -90,7 +98,8 @@ class RegistrationView(MethodView):
             # There is an existing user. We don't want to register users twice
             # Return a message to the user telling them that they they already exist
             response = {
-                'message': 'User already exists. Please login.'
+                'message': 'User already exists. Please login.',
+                "status": "failure"
             }
 
             return make_response(jsonify(response)), 202
@@ -108,7 +117,8 @@ class LoginView(MethodView):
                 data = request.get_json()
             else:
                 response = {
-                    "message": "Please supply json data"
+                    "message": "Please supply json data",
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 400
 
@@ -117,12 +127,14 @@ class LoginView(MethodView):
 
                 if isinstance(data['username'], int) and isinstance(data['password'], str):
                     response = {
-                        "message": "Invalid username, Please try again with a username that is not a number"
+                        "message": "Invalid username, Please try again with a username that is not a number",
+                        "status": "failure"
                     }
                     return make_response(jsonify(response)), 401
 
                 response = {
-                    "message": "Invaid values supplied, Please try again with text values"
+                    "message": "Invaid values supplied, Please try again with text values",
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
 
@@ -148,7 +160,8 @@ class LoginView(MethodView):
                 if access_token:
                     response = {
                         'message': 'You logged in successfully.',
-                        'access_token': access_token.decode()
+                        'access_token': access_token.decode(),
+                        "status": "success"
                     }
 
                     #return a successful response
@@ -156,7 +169,8 @@ class LoginView(MethodView):
             else:
                 # User does not exist. Therefore, we return an error message
                 response = {
-                    'message': 'Invalid username or password, Please try again'
+                    'message': 'Invalid username or password, Please try again',
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
 
@@ -165,14 +179,16 @@ class LoginView(MethodView):
             #check if nothing in json request
             if "Failed to decode JSON object:" in str(e):
                 response = {
-                    "message": "Please supply a correct format for your json data"
+                    "message": "Please supply a correct format for your json data",
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 400
             
             #check if username or password is not supplied
             if str(e) == "'username'" or str(e) == "'password'":
                 response = {
-                    'message': "Please supply a " + str(e)
+                    'message': "Please supply a " + str(e),
+                    "status": "failure"
                 }
 
                 # Return a server error using the HTTP Error Code 400 (Bad request)
@@ -182,7 +198,8 @@ class LoginView(MethodView):
             # Create a response containing an string error message
             # incase an exception occurs
             response = {
-                'message': str(e)
+                'message': str(e),
+                "status": "failure"
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
@@ -209,12 +226,18 @@ class LogoutView(MethodView):
 
                 if user_id == "Expired token. Please login to get a new token":
                     return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
                 if user_id == "Invalid token. Please register or login":
                     return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
                 #check if token exists in the Loggedinuser table
@@ -236,25 +259,31 @@ class LogoutView(MethodView):
 
                     # create the response
                     response = {
-                        'message': 'Logout Successful'
+                        'message': 'Logout Successful',
+                        "status": "success"
                     }
                     # send the response
                     return make_response(jsonify(response)), 201
                 else:
                     #log out user if not already logged out
                     response = {
-                        'message': 'No need you are already logged out'
+                        'message': 'No need you are already logged out',
+                        "status": "success"
                     }
                     
                     #make and send the response
                     return make_response(jsonify(response)), 303
             else:
-                return make_response(jsonify({'Token Error': "Token required"})), 499
+                return make_response(jsonify({
+                    'Token Error': "Token required",
+                    "status": "failure"
+                    })), 499
 
         except Exception as e:
 
             response = {
-                'message': " Internal server error " + str(e)
+                'message': " Internal server error " + str(e),
+                "status": "failure"
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
@@ -283,18 +312,21 @@ class Reset_passwordView(MethodView):
 
                     if not isinstance(your_previous_password, str) or not isinstance(your_new_password, str):
                         response = {
-                            "message": "Sorry, password reset unsuccessful. Please supply string values"
+                            "message": "Sorry, password reset unsuccessful. Please supply string values",
+                            "status": "failure"
                         }
                         return make_response(jsonify(response)), 401
 
                     if your_new_password == "":
                         response = {
-                            "message": "Please supply a value for your new password"
+                            "message": "Please supply a value for your new password",
+                            "status": "failure"
                         }
                         return make_response(jsonify(response)), 400
                 else:
                     response = {
-                        'message': 'Please supply json data'
+                        'message': 'Please supply json data',
+                        "status": "failure"
                     }
                     #make and send the response
                     return make_response(jsonify(response)), 400
@@ -305,12 +337,18 @@ class Reset_passwordView(MethodView):
 
                 if user_id == "Expired token. Please login to get a new token":
                     return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
                 if user_id == "Invalid token. Please register or login":
                     return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
                 #check if token exists in the Loggedinuser table
@@ -336,29 +374,38 @@ class Reset_passwordView(MethodView):
                         found_user.save()
 
                         response = {
-                            'message': 'Password reset Successful'
+                            'message': 'Password reset Successful',
+                            "status": "success"
                         }
                         #make and send the response
                         return make_response(jsonify(response)), 201
                     else:
                         response = {
-                            'message': "Password reset unsuccessful"
+                            'message': "Password reset unsuccessful",
+                            "status": "failure"
                         }
                         #make and send the response
                         return make_response(jsonify(response)), 304
                 else:
                     response = {
-                            'message': "Invalid previous password"
+                            'message': "Invalid previous password",
+                            "status": "failure"
                     }
                         #make and send the response
                     return make_response(jsonify(response)), 304
             else:
-                return make_response(jsonify({'Token Error': "Token required"})), 499
+                return make_response(jsonify(
+                    {
+                        'Token Error': "Token required",
+                        "status": "failure"
+                    }
+                )), 499
 
         except Exception as e:
 
             response = {
-                'message': " Internal server error " + str(e)
+                'message': " Internal server error " + str(e),
+                "status": "failure"
             }
 
             # Return a server error using the HTTP Error Code 500 (Internal Server Error)
