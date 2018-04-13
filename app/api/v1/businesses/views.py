@@ -17,7 +17,10 @@ def register_a_business():
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                                {
+                                    'Token Error': " Token not being sent in the right format: " + str(e),
+                                    "status": "failure"
+                                }
             )), 499
     else:
         auth_token = ''
@@ -28,12 +31,18 @@ def register_a_business():
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         #check if token exists in the Loggedinuser table
@@ -55,7 +64,8 @@ def register_a_business():
                 if not isinstance(value, str):
                     message = "Please supply only string values"
                     response = {
-                        'message': message
+                        'message': message,
+                        "status": "failure"
                     }
                     return make_response(jsonify(response)), 401
 
@@ -78,7 +88,8 @@ def register_a_business():
             if business_with_existing_name:
                 message = "Duplicate business"
                 response = {
-                    'message': message
+                    'message': message,
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
 
@@ -95,18 +106,27 @@ def register_a_business():
             db.session.add(a_business)
             Business.add(a_business)
 
-            message = "Created business: " + name + "successfuly"
+            message = "Created business: " + name + " successfully"
             response = {
-                'message': message
+                'message': message,
+                "status": "success"
             }
             return make_response(jsonify(response)), 201
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"
+                                }
                     )), 499
     else:
         if auth_token == '':
-            return make_response(jsonify({'Token Error': "Token required"})), 499
+            return make_response(jsonify(
+                {
+                    'Token Error': "Token required",
+                    "status": "failure"
+                }
+            )), 499
 
 # route to get all businesses
 @businesses_blueprint.route('/businesses', methods=['GET'])
@@ -120,7 +140,10 @@ def get_all_businesses():
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                                {
+                                    'Token Error': " Token not being sent in the right format: " + str(e),
+                                    "status": "failure"
+                                }
             )), 499
     else:
         auth_token = ''
@@ -132,12 +155,18 @@ def get_all_businesses():
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         #check if token exists in the Loggedinuser table
@@ -167,20 +196,30 @@ def get_all_businesses():
                     })
 
                 response = {
-                    'Businesses': found_business_list
+                    'Businesses': found_business_list,
+                    "status": "success"
                 }
                 return make_response(jsonify(response)), 201
             else:
                 response = {
-                    'Message: ': 'Sorry currently no businesses are present'
+                    'Message: ': found_business_list,
+                    "status": "success"
                 }
                 return make_response(jsonify(response)), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"
+                                }
                     )), 499            
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
 
 
 # route to get a business by ID
@@ -195,7 +234,10 @@ def get_a_business_by_id(id):
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                                {
+                                    'Token Error': " Token not being sent in the right format: " + str(e),
+                                    "status": "failure"
+                                }
             )), 499
     else:
         auth_token = ''
@@ -207,12 +249,18 @@ def get_a_business_by_id(id):
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         #check if token exists in the Loggedinuser table
@@ -238,15 +286,33 @@ def get_a_business_by_id(id):
                     'user_id': found_business.user_id
                 }
 
-                return make_response(jsonify({'Business': business_as_a_dict})), 201
+                return make_response(jsonify(
+                    {
+                        'Business': business_as_a_dict,
+                        "status": "success"
+                    }
+                )), 201
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'Business was not found',
+                        "status": "success"
+                    }
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"                                    
+                                }
                     )), 499 
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
 
 #route to delete a business by ID
 @businesses_blueprint.route('/businesses/<int:id>', methods=['DELETE'])
@@ -260,7 +326,10 @@ def delete_a_business_by_id(id):
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                                {
+                                    'Token Error': " Token not being sent in the right format: " + str(e),
+                                    "status": "failure"
+                                }
             )), 499
     else:
         auth_token = ''
@@ -272,12 +341,18 @@ def delete_a_business_by_id(id):
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         #check if token exists in the Loggedinuser table
@@ -302,17 +377,40 @@ def delete_a_business_by_id(id):
                     db.session.delete(found_business)
                     db.session.commit()
 
-                    return make_response(jsonify({'Message': 'Business deleted'})), 201
+                    return make_response(jsonify(
+                        {
+                            'Message': 'Business deleted',
+                            "status": "success"
+                        }
+                    )), 201
                 else:
-                    return make_response(jsonify({'Message': 'Sorry you are not allowed to delete this business'})), 301
+                    return make_response(jsonify(
+                        {
+                            'Message': 'Sorry you are not allowed to delete this business',
+                            "status": "success"
+                        }
+                    )), 301
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'Business was not found',
+                        "status": "success"
+                    }
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"
+                                }
                     )), 499            
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
 
 #route to update a business by ID
 @businesses_blueprint.route('/businesses/<int:id>', methods=['PUT'])
@@ -326,7 +424,10 @@ def update_a_business_given_its_id(id):
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                {
+                    'Token Error': " Token not being sent in the right format: " + str(e),
+                    "status": "failure"
+                }
             )), 499
     else:
         auth_token = ''
@@ -337,12 +438,18 @@ def update_a_business_given_its_id(id):
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Token Expired. Please login to get a new one",
+                    "status": "failure"
+                }
+            )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         #check if token exists in the Loggedinuser table
@@ -368,7 +475,8 @@ def update_a_business_given_its_id(id):
                     if not isinstance(value, str):
                         message = "Please supply only string values"
                         response = {
-                            'message': message
+                            'message': message,
+                            "status": "failure"
                         }
                         return make_response(jsonify(response)), 401
 
@@ -392,7 +500,10 @@ def update_a_business_given_its_id(id):
                     if duplicate_biz:
                         return make_response(
                             jsonify(
-                                {'Message': 'Duplicate business'}
+                                {
+                                    'Message': 'Duplicate business',
+                                    "status": "success"
+                                }
                             )
                         ), 401
                     
@@ -405,23 +516,42 @@ def update_a_business_given_its_id(id):
                     db.session.commit()
                     return make_response(
                         jsonify(
-                            {'Message': 'Business updated to' + data['name']}
+                            {
+                                'Message': 'Business updated to ' + data['name'],
+                                "status": "success"
+                            }
                         )
                     ), 201
                 except Exception as e:
                     return make_response(
                         jsonify(
-                            {'Message': 'Failed to update business because of ' + str(e)}
+                            {
+                                'Message': 'Failed to update business because of ' + str(e),
+                                "status": "failure"
+                            }
                         )
                     ), 500
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'Business was not found',
+                        "status": "success"
+                    }
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"
+                                }
                     )), 499 
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
 
 #route to search for a business using its name
 @businesses_blueprint.route('/businesses/search', methods=['GET'])
@@ -435,7 +565,10 @@ def search_for_a_business_by_its_name():
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                {
+                    'Token Error': " Token not being sent in the right format: " + str(e),
+                    "status": "failure"
+                }
             )), 499
     else:
         auth_token = ''
@@ -446,13 +579,19 @@ def search_for_a_business_by_its_name():
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Token Expired. Please login to get a new one",
+                    "status": "failure"
+                }
+            )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Invalid Token. Please login to get a new one",
+                    "status": "failure"
+                }
+            )), 499
 
         #check if token exists in the Loggedinuser table
         a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
@@ -473,24 +612,48 @@ def search_for_a_business_by_its_name():
                 business_to_find = Business.query.filter(Business.name.ilike('%'+request.args['q']+'%'))
                    
                 if not business_to_find:
-                    return make_response(jsonify({'Message': 'No business found'})), 404
+                    return make_response(jsonify(
+                        {
+                            'Message': 'No business found',
+                            "status": "success"
+                        }                    
+                    )), 404
                         
                 found_business_details = []
                 for business in business_to_find:
                     found_business_details.append({
                         "name": business.name,
-                        "category": business.category
+                        "category": business.category,
+                        "location": business.location
                     })
 
-                return make_response(jsonify({'message':found_business_details})), 201
+                return make_response(jsonify(
+                    {
+                        'message':found_business_details,
+                        "status": "success"
+                    }
+                )), 201
             else:
-                return make_response(jsonify({'Message': 'No search parameter found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'No search parameter found',
+                        "status": "failure"
+                    }
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"
+                                }
                     )), 499 
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
 
 #route to filter out businesses by their location or category
 @businesses_blueprint.route('/businesses/filter', methods=['GET'])
@@ -504,7 +667,10 @@ def filter_out_businesses_by_location_or_category():
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                {
+                    'Token Error': " Token not being sent in the right format: " + str(e),
+                    "status": "failure"
+                }
             )), 499
     else:
         auth_token = ''
@@ -515,13 +681,19 @@ def filter_out_businesses_by_location_or_category():
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Token Expired. Please login to get a new one",
+                    "status": "failure"
+                }
+            )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Invalid Token. Please login to get a new one",
+                    "status": "failure"
+                }
+            )), 499
 
         #check if token exists in the Loggedinuser table
         a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
@@ -545,7 +717,12 @@ def filter_out_businesses_by_location_or_category():
                 )
                    
                 if not business_to_find:
-                    return make_response(jsonify({'Message': 'No business found'})), 404
+                    return make_response(jsonify(
+                        {
+                            'Message': 'No business found',
+                            "status": "success"
+                        }
+                    )), 404
                         
                 found_business_details = []
                 for business in business_to_find:
@@ -555,15 +732,33 @@ def filter_out_businesses_by_location_or_category():
                         "location": business.location
                     })
 
-                return make_response(jsonify({'message':found_business_details})), 201
+                return make_response(jsonify(
+                    {
+                        'message':found_business_details,
+                        "status": "success"
+                    }
+                )), 201
             else:
-                return make_response(jsonify({'Message': 'No filter parameter found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'No filter parameter found',
+                        "status": "failure"
+                    }                
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                        {
+                            'Token Error': "Invalid Token",
+                            "status": "failure"
+                        }
                     )), 499 
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
 
 
 # route to get a limited number of businesses
@@ -578,7 +773,10 @@ def get_a_limited_number_of_businesses():
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                {
+                    'Token Error': " Token not being sent in the right format: " + str(e),
+                    "status": "failure"
+                }
             )), 499
     else:
         auth_token = ''
@@ -590,12 +788,18 @@ def get_a_limited_number_of_businesses():
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                                {
+                                    'Token Error': " Token Expired. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
+                                {
+                                    'Token Error': " Invalid Token. Please login to get a new one",
+                                    "status": "failure"
+                                }
                     )), 499
 
         #check if token exists in the Loggedinuser table
@@ -614,7 +818,8 @@ def get_a_limited_number_of_businesses():
             # if it is not, return an error response
             if 'limit' not in request.args:
                 response = {
-                    'Message: ': 'Please specify a limit get parameter'
+                    'Message: ': 'Please specify a limit get parameter',
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
 
@@ -624,7 +829,8 @@ def get_a_limited_number_of_businesses():
                 # limit parameter is not an integer so return an error response
                 # saying that it is not
                 response = {
-                    'Message: ':'Please specify the limit get parameter as an integer'
+                    'Message: ':'Please specify the limit get parameter as an integer',
+                    "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
 
@@ -649,17 +855,27 @@ def get_a_limited_number_of_businesses():
                     })
 
                 response = {
-                    'Businesses': found_business_list
+                    'Businesses': found_business_list,
+                    "status": "success"
                 }
                 return make_response(jsonify(response)), 201
             else:
                 response = {
-                    'Message: ': 'Sorry currently no businesses are present'
+                    'Message: ': 'Sorry currently no businesses are present',
+                    "status": "success"
                 }
                 return make_response(jsonify(response)), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
+                                {
+                                    'Token Error': "Invalid Token",
+                                    "status": "failure"
+                                }
                     )), 499            
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                "status": "failure"
+            }
+        )), 499
