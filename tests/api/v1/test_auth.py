@@ -168,7 +168,7 @@ class AuthTestCase(unittest.TestCase):
         # assert that the request contains a success message and 
         # a 201 status code
         self.assertEqual(result['message'],
-                        "Please supply a values for both username and password")
+                        "Please supply a value for both username and password")
         self.assertEqual(res.status_code, 400)
 
     def test_user_registration_rejects_non_string_supplied_for_username_or_password(self):
@@ -303,7 +303,7 @@ class AuthTestCase(unittest.TestCase):
         # assert that the request contains a success message and 
         # a 401 status code
         self.assertEqual(result['message'],
-                        "Invaid values supplied, Please try again with text values")
+                        "Invalid values supplied, Please try again with text values")
         self.assertEqual(res.status_code, 401)
 
     def test_user_login_rejects_username_supplied_as_number(self):
