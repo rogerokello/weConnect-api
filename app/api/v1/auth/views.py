@@ -53,7 +53,7 @@ class RegistrationView(MethodView):
         #check if username or password is empty
         if data['username'] == "" or data['password'] == "":
             response = {
-                "message": "Please supply a values for both username and password",
+                "message": "Please supply a value for both username and password",
                 "status": "failure"
             }
             return make_response(jsonify(response)), 400
@@ -133,7 +133,7 @@ class LoginView(MethodView):
                     return make_response(jsonify(response)), 401
 
                 response = {
-                    "message": "Invaid values supplied, Please try again with text values",
+                    "message": "Invalid values supplied, Please try again with text values",
                     "status": "failure"
                 }
                 return make_response(jsonify(response)), 401
