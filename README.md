@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/rogerokello/weconnect-practice.svg?branch=dev-v3-trial)](https://travis-ci.org/rogerokello/weconnect-practice) <a href='https://coveralls.io/github/rogerokello/weconnect-practice?branch=dev-v3-trial'><img src='https://coveralls.io/repos/github/rogerokello/weconnect-practice/badge.svg?branch=dev-v3-trial' alt='Coverage Status' /></a>
+[![Build Status](https://travis-ci.org/rogerokello/weconnect-practice.svg?branch=dev-v5)](https://travis-ci.org/rogerokello/weconnect-practice) <a href='https://coveralls.io/github/rogerokello/weconnect-practice?branch=dev-v5'><img src='https://coveralls.io/repos/github/rogerokello/weconnect-practice/badge.svg?branch=dev-v5' alt='Coverage Status' /></a>
  <a href="https://codeclimate.com/github/rogerokello/weconnect-practice/maintainability"><img src="https://api.codeclimate.com/v1/badges/203bec3842f23583461b/maintainability" /></a>
 </br>
 # weConnect API
