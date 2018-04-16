@@ -140,12 +140,18 @@ def get_business_reviews_given_its_id(id):
                     for a_review in business_reviews:
                         if a_review.business_id == found_business.id:
                             matching_reviews_found.append({
+                                'review_id': a_review.id,
                                 'review_summary': a_review.review_summary,
                                 'review_description': a_review.review_description,
-                                'star_rating': a_review.star_rating
+                                'star_rating': a_review.star_rating,
+                                'business_id': a_review.business.id,
+                                'business_name': a_review.business.name,
+                                'business_category': a_review.business.category,
+                                'business_location': a_review.business.location
                             })
                     response = {
-                        'Reviews': matching_reviews_found
+                        'Reviews': matching_reviews_found,
+                        'status': 'success'
                     }
                     return make_response(jsonify(response)), 201
                 else:
