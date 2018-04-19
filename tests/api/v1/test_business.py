@@ -38,7 +38,15 @@ class BusinessTestCase(unittest.TestCase):
         #create a dict to be used to store user details
         self.user_data = {
             'username': 'roger',
-            'password': 'okello'
+            'password': 'okello',
+            'email':'rogerokello@gmail.com'
+        }
+
+        #create a dict to be used to store another user's details
+        self.another_users_data = {
+            'username': 'james',
+            'password': 'otim',
+            'email':'jamesotim@gmail.com'
         }
 
         #bind the app context
@@ -53,25 +61,17 @@ class BusinessTestCase(unittest.TestCase):
             db.session.remove()
             db.drop_all()
 
-    def register_user(self, username="roger", password="okello"):
+    def register_user(self, username="roger", password="okello", email="rogerokello@gmail.com"):
         """This helper method helps register a test user."""
-        user_data = {
-            'username': username,
-            'password': password
-        }
         return self.client().post('/auth/register',
-                                 data=json.dumps(self.user_data),
+                                 data=json.dumps({'username':username, 'password':password, 'email':email}),
                                  content_type='application/json'
                                  )
     
-    def login_user(self, username="roger", password="okello"):
+    def login_user(self, username="roger", password="okello", email="rogerokello@gmail.com"):
         """This helper method helps log in a test user."""
-        user_data = {
-            'username': username,
-            'password': password
-        }
         return self.client().post('/auth/login',
-                                        data=json.dumps(self.user_data),
+                                        data=json.dumps({'username':username,'password':password, 'email':email}),
                                         content_type='application/json'
                                 )
 
@@ -167,7 +167,7 @@ class BusinessTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
 
         # check that XEDROX string in returned json response
-        self.assertIn('XEDROX', str(response.data))
+        self.assertIn('Xedrox', str(response.data))
     
     def test_api_can_get_all_businesses_works_in_absence_of_businesses(self):
         """Test the API works when no businesses are available (GET request)"""
@@ -261,7 +261,7 @@ class BusinessTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
 
         # check that XEDROX string in returned json response
-        self.assertIn('XEDROX', str(response.data))
+        self.assertIn('Xedrox', str(response.data))
     
     def test_api_can_get_business_by_id_works_when_no_biz_exists(self):
         """Test the API can get a business by ID works when no biz exists (GET request)"""
@@ -484,6 +484,39 @@ class BusinessTestCase(unittest.TestCase):
         # check that Megatrends string in returned json response
         self.assertIn('Megatrends', str(response.data))
 
+    def test_api_can_modify_a_business_profile_refuses_a_user_to_update_business_they_did_not_create(self):
+        """Test the API can modify a business profile (PUT request)"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # first add a business
+        self.client().post('/businesses',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.a_business),
+                            content_type='application/json')
+
+        self.register_user(username="james", password="otim", email="jamesotim@gmail.com")
+        result = self.login_user(username="james", password="otim", email="jamesotim@gmail.com")
+
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # Try to edit a business the user did not create 
+        response = self.client().put('/businesses/1',
+                            headers=dict(Authorization="Bearer " + access_token),
+                            data=json.dumps(self.edited_business),
+                            content_type='application/json')
+
+        #check that a 401 response status code was returned
+        self.assertEqual(response.status_code, 401)
+
+        # check that Sorry update was rejected  string in returned json response
+        self.assertIn('Sorry update was rejected ', str(response.data))
+
     def test_api_can_modify_a_business_profile_rejects_update_for_number_values(self):
         """Test the API can modify a business profile rejects update for number values (PUT request)"""
         # register a test user, then log them in
@@ -655,7 +688,7 @@ class BusinessTestCase(unittest.TestCase):
                             content_type='application/json')
 
         # check that XEDROX string in returned json response
-        self.assertIn('XEDROX', str(response.data)) 
+        self.assertIn('Xedrox', str(response.data)) 
 
         #check that a 201 response status code was returned
         self.assertEqual(response.status_code, 201)  

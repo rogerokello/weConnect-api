@@ -76,14 +76,19 @@ def register_a_business():
             category = data['category']
             location = data['location']
 
-            # Strip all white spaces from the name
-            # and name convert to upper case
+            #remove all spaces from the front and end of the name sent
+            name = name.strip(' \t\n\r')
+
+            # Pick out every word in the name separated by spaces and put into
+            # an array then join them into a string with only a single where
+            # words are separated by a single string. Finally convert the resultant
+            # string to upper case
             name_in_upper_case = " ".join(name.split()).upper()
 
             # Check to see if business with that name exists before
             # adding a new business
             business_with_existing_name = Business.query.filter_by(
-                                            name=name_in_upper_case).first()
+                                            name=name).first()
 
             if business_with_existing_name:
                 message = "Duplicate business"
@@ -97,7 +102,7 @@ def register_a_business():
             a_user = User.query.get(int(user_id))
 
             #create a business object
-            a_business = Business(name=name_in_upper_case,
+            a_business = Business(name=name,
                                     category=category,
                                     location=location,
                                     creator=a_user)
@@ -466,7 +471,18 @@ def update_a_business_given_its_id(id):
                 
             #check if business is there
             found_business = Business.query.filter_by(id=id).first()
+            
             if found_business:
+
+                #reject update if the user is not the one who created the business
+                if found_business.user_id != int(user_id):
+                    message = "Sorry update was rejected because you did not create the business"
+                    response = {
+                        'message': message,
+                        "status": "failure"
+                    }
+                    return make_response(jsonify(response)), 401
+
                 # get the data that was sent in the request
                 data = request.get_json()
 
@@ -483,16 +499,22 @@ def update_a_business_given_its_id(id):
                 # Remove white spaces from business name
                 # and transform name to upper case
                 name = data['name']
+
+                #remove all spaces from the front and end of the name sent
+                name = name.strip(' \t\n\r')
+
+                #convert name to upper case with single spaces between words
+                # in name
                 name_in_upper_case = " ".join(name.split()).upper()
 
                 # Check if the biz name sent and tranformed to uppercase 
                 # is not the same as the biz name in the database
-                if found_business.name != name_in_upper_case:
+                if found_business.name != name:
 
                     # Perform a search for that biz name to see if it
                     # exists.
                     duplicate_biz = Business.query.filter_by(
-                                                    name=name_in_upper_case
+                                                    name=name
                                                     ).first()
 
                     # If it exists, reject the update of biz
@@ -508,7 +530,7 @@ def update_a_business_given_its_id(id):
                         ), 401
                     
                 #Begin to update the business
-                found_business.name = name_in_upper_case
+                found_business.name = name
                 found_business.category = data['category']
                 found_business.location = data['location']
 
@@ -535,7 +557,7 @@ def update_a_business_given_its_id(id):
                 return make_response(jsonify(
                     {
                         'Message': 'Business was not found',
-                        "status": "success"
+                        "status": "failure"
                     }
                 )), 404
         else:

@@ -6,6 +6,7 @@ from app.models.user import User
 from app.models.loggedinuser import Loggedinuser
 from app import db
 from flasgger import swag_from
+import re
 
 class RegistrationView(MethodView):
     """This class registers a new user."""
@@ -43,6 +44,7 @@ class RegistrationView(MethodView):
         try:
             username = data['username']
             password = data['password']
+            email = data['email']
         except KeyError as missing_key:
             response = {
                 "message": "Please supply a " + str(missing_key),
@@ -50,22 +52,32 @@ class RegistrationView(MethodView):
             }
             return make_response(jsonify(response)), 400
 
-        #check if username or password is empty
-        if data['username'] == "" or data['password'] == "":
+        
+
+        #check if username, password or email is empty
+        if data['username'] == "" or data['password'] == "" or data['email'] == "":
             response = {
-                "message": "Please supply a value for both username and password",
+                "message": "Please supply a value for username, email and password",
                 "status": "failure"
             }
             return make_response(jsonify(response)), 400
 
         # check if what was got from json for username or password is not a string
-        if not isinstance(username, str) or not isinstance(password, str):
+        if not isinstance(username, str) or not isinstance(password, str) or not isinstance(email, str):
             response = {
-                'message': 'Please supply string values for both username and password',
+                'message': 'Please supply string values for username, email and password',
                 "status": "failure"
             }
                
             return make_response(jsonify(response)), 401
+
+        #check if email is not in the right format        
+        if re.findall(r'[\w\.-]+@[\w\.-]+', email) == []:
+            response = {
+                "message": "Please supply a valid email address",
+                "status": "failure"
+            }
+            return make_response(jsonify(response)), 400
 
         # Check to see if the user already exists
         user = User.query.filter_by(username=data['username']).first()
@@ -76,8 +88,9 @@ class RegistrationView(MethodView):
                 # Register the user
                 username = data['username']
                 password = data['password']
+                email = data['email']
 
-                user = User(username=username, password=password)
+                user = User(username=username, email=email, password=password)
                 user.add()
 
                 response = {

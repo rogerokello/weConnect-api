@@ -18,7 +18,10 @@ def review_a_business_given_its_id(id):
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                {
+                    'Token Error': " Token not being sent in the right format: " + str(e),
+                    'status': 'failure'                    
+                }
             )), 499
     else:
         auth_token = ''
@@ -29,13 +32,19 @@ def review_a_business_given_its_id(id):
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Token Expired. Please login to get a new one",
+                    'status': 'failure'
+                }
+            )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Invalid Token. Please login to get a new one",
+                    'status': 'failure'
+                }
+            )), 499
 
         #check if token exists in the Loggedinuser table
         a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
@@ -74,20 +83,34 @@ def review_a_business_given_its_id(id):
 
                 message = "Created review: " + a_review.review_summary + "successfuly"
                 response = {
-                    'message': message
+                    'message': message,
+                    'status': 'success'
                 }
 
                 return make_response(jsonify(response)), 201
 
             else:
 
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'Business was not found',
+                        'status':'failure'
+                    }
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
-                    )), 499
+                {
+                    'Token Error': "Invalid Token",
+                    'status': 'failure'
+                }
+            )), 499
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                'status': 'failure'
+            }
+        )), 499
 
 #get all business reviews
 @reviews_blueprint.route('/businesses/<int:id>/reviews', methods=['GET'])
@@ -101,7 +124,10 @@ def get_business_reviews_given_its_id(id):
             auth_token = auth_header.split(" ")[1]
         except Exception as e:
             return make_response(jsonify(
-                                {'Token Error': " Token not being sent in the right format: " + str(e)}
+                {
+                    'Token Error': " Token not being sent in the right format: " + str(e),
+                    'status': 'failure'
+                }
             )), 499
     else:
         auth_token = ''
@@ -112,13 +138,19 @@ def get_business_reviews_given_its_id(id):
 
         if user_id == "Expired token. Please login to get a new token":
             return make_response(jsonify(
-                                {'Token Error': " Token Expired. Please login to get a new one"}
+                        {
+                            'Token Error': " Token Expired. Please login to get a new one",
+                            'status': 'failure'
+                        }
                     )), 499
 
         if user_id == "Invalid token. Please register or login":
             return make_response(jsonify(
-                                {'Token Error': " Invalid Token. Please login to get a new one"}
-                    )), 499
+                {
+                    'Token Error': " Invalid Token. Please login to get a new one",
+                    'status': 'failure'                    
+                }
+            )), 499
 
         #check if token exists in the Loggedinuser table
         a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
@@ -156,14 +188,28 @@ def get_business_reviews_given_its_id(id):
                     return make_response(jsonify(response)), 201
                 else:
                     response = {
-                        'Message: ': 'Sorry currently no reviews are present'
+                        'Message: ': 'Sorry currently no reviews are present',
+                        'status': 'success'
                     }
                     return make_response(jsonify(response)), 404
             else:
-                return make_response(jsonify({'Message': 'Business was not found'})), 404
+                return make_response(jsonify(
+                    {
+                        'Message': 'Business was not found',
+                        'status': 'failure'
+                    }
+                )), 404
         else:
             return make_response(jsonify(
-                                {'Token Error': "Invalid Token"}
-                    )), 499
+                {
+                    'Token Error': "Invalid Token",
+                    'status': 'failure'
+                }
+            )), 499
     else:
-        return make_response(jsonify({'Token Error': "Token required"})), 499
+        return make_response(jsonify(
+            {
+                'Token Error': "Token required",
+                'status': 'failure'
+            }
+        )), 499
