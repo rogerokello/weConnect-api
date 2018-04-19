@@ -153,17 +153,29 @@ class LoginView(MethodView):
 
             # Get the user object using their user name
             found_user = User.query.filter_by(username=data['username'], password=data['password']).first()
-            # Try to authenticate the found user using their password
-            if found_user:
+
+            # Get the user object using their email
+            found_user_by_email = User.query.filter_by(email=data['username'], password=data['password']).first()
+            
+            # Try to see if the user can be found by their username or email address and password
+            if found_user or found_user_by_email:
 
                 #change the logged in flag to 1
-                found_user.logged_in = 1
+                if found_user:
+                    found_user.logged_in = 1
+                    # Generate the access token. This will be used as
+                    # the authorization header
+                    access_token = User.generate_token(found_user.id)
+                    db.session.commit()
+                    
                 
+                if found_user_by_email:
+                    found_user_by_email.logged_in = 1
+                    # Generate the access token. This will be used as
+                    # the authorization header
+                    access_token = User.generate_token(found_user_by_email.id)
+                    db.session.commit()
 
-                # Generate the access token. This will be used as
-                # the authorization header
-                access_token = User.generate_token(found_user.id)
-                db.session.commit()
 
                 #store token in the loggedinusers table
                 loggedinuser = Loggedinuser(token=access_token.decode())
@@ -238,6 +250,14 @@ class LogoutView(MethodView):
                 user_id = User.decode_token(auth_token)
 
                 if user_id == "Expired token. Please login to get a new token":
+                    
+                    #First check if token exists in the Loggedinuser table
+                    a_logged_in_user_token = Loggedinuser.query.filter_by(token=auth_token).first()
+
+                    # Delete token from the logged in user's table if it is in the logged in user table
+                    if a_logged_in_user_token:
+                        Loggedinuser.delete_token(auth_token)
+
                     return make_response(jsonify(
                                 {
                                     'Token Error': " Token Expired. Please login to get a new one",

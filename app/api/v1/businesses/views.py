@@ -496,8 +496,7 @@ def update_a_business_given_its_id(id):
                         }
                         return make_response(jsonify(response)), 401
 
-                # Remove white spaces from business name
-                # and transform name to upper case
+                
                 name = data['name']
 
                 #remove all spaces from the front and end of the name sent
@@ -505,7 +504,7 @@ def update_a_business_given_its_id(id):
 
                 #convert name to upper case with single spaces between words
                 # in name
-                name_in_upper_case = " ".join(name.split()).upper()
+                #name_in_upper_case = " ".join(name.split()).upper()
 
                 # Check if the biz name sent and tranformed to uppercase 
                 # is not the same as the biz name in the database
@@ -530,9 +529,12 @@ def update_a_business_given_its_id(id):
                         ), 401
                     
                 #Begin to update the business
-                found_business.name = name
-                found_business.category = data['category']
-                found_business.location = data['location']
+                
+                for a_key in data.keys():
+                    if a_key == "name":
+                        setattr(found_business,a_key,name)
+                    setattr(found_business,a_key,name)
+                
 
                 try:
                     db.session.commit()
