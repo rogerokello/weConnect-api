@@ -8,7 +8,7 @@ from flask_migrate import Migrate, MigrateCommand
 from app import db, create_app
 
 # initialize the app with all its configurations
-app = create_app('testing')
+app = create_app('default')
 
 # create an instance of class that will handle our commands
 manager = Manager(app)

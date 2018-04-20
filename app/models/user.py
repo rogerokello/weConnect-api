@@ -9,7 +9,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(64), index=True, unique=True)
-    password = db.Column(db.String(64))
+    password = db.Column(db.Text())
     logged_in = db.Column(db.Integer)
     date_created = db.Column(
         db.DateTime, default=db.func.current_timestamp())
@@ -53,7 +53,7 @@ class User(db.Model):
             return str(e)
 
     @staticmethod
-    def decode_token(token):
+    def get_token_user_id(token):
         """Decodes the access token from the Authorization header."""
         try:
             # try to decode the token using our SECRET variable

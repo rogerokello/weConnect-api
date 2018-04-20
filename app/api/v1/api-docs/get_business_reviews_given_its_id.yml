@@ -35,7 +35,7 @@ responses:
           type: string
           enum:
             - "Business was not found"
-  499:
+  403:
     description: A token error, invalid token or missing token
     schema: 
       type: object
