@@ -16,7 +16,7 @@ class Business(db.Model):
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    reviews = db.relationship('Review', backref='business', lazy='dynamic')
+    reviews = db.relationship('Review', backref='business', lazy='dynamic', cascade='all, delete-orphan')
 
 
     def add(self):

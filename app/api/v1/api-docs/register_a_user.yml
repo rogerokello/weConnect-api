@@ -41,7 +41,7 @@ responses:
           enum:
             - "Please supply both username and password keys"
             - "Please supply both username and password values"
-  201:
+  401:
     description: User already exists
     schema:
       type: object
