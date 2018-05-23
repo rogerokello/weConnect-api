@@ -3,8 +3,8 @@ from flask_bcrypt import Bcrypt
 import jwt
 
 
-class Loggedinuser(db.Model):
-    __tablename__ = 'loggedinusers'
+class Token(db.Model):
+    __tablename__ = 'tokens'
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.Text())
 

@@ -41,7 +41,7 @@ responses:
           type: string
           enum:
            - "Sorry currently no businesses are present"
-  499:
+  403:
     description: A token error, invalid token or missing token
     schema: 
       type: object

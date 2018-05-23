@@ -7,9 +7,11 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SWAGGER = {
             'swagger': '2.0',
-            'title': 'we-connect-you-api',
-            'description': "The we-connect-you app allows you to register a business and\
-            make reviews of other businesses",
+            'title': 'weConnect API',
+            'description': "This API brings businesses and individuals together.\
+             By using it one will be able to create awareness of businesses and \
+             give users the ability to write reviews about the businesses that \
+             they have interacted with.",
             'basePath': '/',
             'version': '0.0.1',
             'contact': {

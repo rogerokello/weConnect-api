@@ -32,7 +32,7 @@ responses:
           enum:
            - "No business found"
            - "No filter parameter found"
-  499:
+  403:
     description: A token error, invalid token or missing token
     schema: 
       type: object

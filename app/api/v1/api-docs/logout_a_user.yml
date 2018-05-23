@@ -28,7 +28,7 @@ responses:
           type: string
           enum:
             - "No need you are already logged out"       
-  499:
+  403:
     description: A token error or missing token
     schema: 
       type: object
