@@ -1,10 +1,11 @@
 language: python
 python:
-  - 3.5.2
+  - 3.6.5
 install: pip install -r requirements.txt
-
+before_script:
+  - psql -c 'create database business_test_db;' -U postgres
 script:
   #- coverage run app_tests.py
-  - coverage run manage.py test
+  - coverage run manage.py testv1
    
 after_success: coveralls

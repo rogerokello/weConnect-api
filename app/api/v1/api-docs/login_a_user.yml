@@ -1,0 +1,69 @@
+Endpoint to login a registered user
+---
+tags:
+  - User
+parameters:
+  - name: body
+    description: This contains login details
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: "string"
+          example: "roger"
+        password:
+          type: "string"
+          format: password
+          example: "okello"
+
+responses:
+  200:
+    description: User login successful
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "You logged in successfully."
+        access_token:
+          type: string
+  303:
+    description: The user is logged in already
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "No need you are already logged in"       
+  401:
+    description: Invalid credentials supplied by user
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Invalid username or password, Please try again"
+  400:
+    description: User data not sent with request
+    schema: 
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Please supply both username and password"
+  500:
+    description: Internal server Error
+    schema:
+      type: object
+      properties:
+        message:
+          type: string

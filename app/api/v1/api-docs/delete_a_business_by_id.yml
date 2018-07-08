@@ -1,0 +1,45 @@
+Endpoint to delete business information using an id value
+---
+tags:
+  - Business
+parameters:
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+  - name: id
+    description: The unique id of the business
+    type: string
+    in: path
+    required: true
+
+responses:
+  201:
+    description: Business deleted
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: object
+          enum:
+            - "Business deleted"
+  404:
+    description: No business found
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string
+          enum:
+            - "Business was not found"
+  403:
+    description: A token error, invalid token or missing token
+    schema: 
+      type: object
+      properties:
+        Token Error:
+          type: string
+          enum:
+            - "Invalid Token"
+            - "Token required"

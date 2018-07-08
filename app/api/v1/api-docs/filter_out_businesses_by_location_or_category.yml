@@ -1,0 +1,41 @@
+Endpoint to filter out businesses by name or category
+---
+tags:
+  - Business
+parameters:
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+  - name: categoryorlocation
+    description: The name of a business category or location
+    type: string
+    in: query
+    required: true
+
+responses:
+  201:
+    description: The businesses that were found after the search
+    schema: 
+      type: object
+      properties:
+        "message":
+          type: Array
+  404:
+    description: No businesses or search parameter found
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string
+          enum:
+           - "No business found"
+           - "No filter parameter found"
+  403:
+    description: A token error, invalid token or missing token
+    schema: 
+      type: object
+      properties:
+        "Token Error":
+          type: string
