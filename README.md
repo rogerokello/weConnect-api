@@ -47,17 +47,17 @@ This API brings businesses and individuals together. By using it one will be abl
 
 | Method | End Point | Description |
 | --- | --- | --- |
-|POST |   /api/auth/register |        This registers a new user |
-|  POST | /api/auth/login  |          This logins an already registered user |
-|  POST | /api/auth/logout |          This logs out a user |
-|  POST | /api/auth/reset-password  |  This changes the password of a user |
-|  POST | /api/businesses |           This registers a new business |
-|  PUT | /api/businesses/<businessId> | This updates a business profile |
-|  DELETE | /api/businesses/<businessId> | This removes a business |
-|  GET | /api/api/businesses            |  This gets all the existing businesses |
-|  GET | /api/businesses/<businessId> |  This gets a business |
-|  POST | /api/businesses/<businessId>/reviews  |  This makes a review for a review |
-|  GET | /api/businesses/<businessId>/reviews |  This gets the reviews that belong to a business |
-|  GET | /api/businesses/search | This searches for a business using the business name with a get parameter q. Visit the API docs to verify how to use it |
-|  GET | /api/businesses/filter | This filters out businesses using category or location using get parameter categoryorlocation. Visit the api docs to verify how to use it |
-|  GET | /api/businesses/paginate | This limits the number of businesses returned using get parameter limit. Visit the API docs to verify how to use it |
+|  POST |   `/api/auth/register` |        This registers a new user |
+|  POST | `/api/auth/login`  |          This logins an already registered user |
+|  POST | `/api/auth/logout` |          This logs out a user |
+|  POST | `/api/auth/reset-password`  |  This changes the password of a user |
+|  POST | `/api/businesses` |           This registers a new business |
+|  PUT | `/api/businesses/<businessId>` | This updates a business profile |
+|  DELETE | `/api/businesses/<businessId>` | This removes a business |
+|  GET | `/api/api/businesses`            |  This gets all the existing businesses. You may also specify a get parameter pageNo, q or limit. The limit parameter will return a specified number of results, pageNo the results at a certain page while q will return businesses according to name, category or location |
+|  GET | `/api/businesses/<businessId>` |  This gets a business |
+|  POST | `/api/businesses/<businessId>/reviews`  |  This makes a review for a business |
+|  GET | `/api/businesses/<businessId>/reviews` |  This gets the reviews that belong to a business |
+|  GET | `/api/businesses/search` | This searches for a business using the business name with a get parameter q. Visit the API docs to verify how to use it |
+|  GET | `/api/businesses/filter` | This filters out businesses using category or location using get parameter categoryorlocation. Visit the api docs to verify how to use it |
+|  GET | `/api/businesses/paginate` | This limits the number of businesses returned using get parameter limit. Visit the API docs to verify how to use it |
