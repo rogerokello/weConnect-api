@@ -1,0 +1,48 @@
+Endpoint to get all registered businesses
+---
+tags:
+  - Business
+parameters:
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+  - name: limit
+    description: A number of businesses to be returned
+    type: integer
+    in: query
+    required: false
+  - name: q
+    description: The name of business to search for
+    type: string
+    in: query
+    required: false
+
+responses:
+  201:
+    description: Businesses found
+    schema: 
+      type: object
+      properties:
+        "Businesses:":
+          type: array
+  404:
+    description: No businesses found
+    schema: 
+      type: object
+      properties:
+        "Message: ":
+          type: string
+          enum:
+            - "Sorry currently no businesses are present"
+  403:
+    description: A token error, invalid token or missing token
+    schema: 
+      type: object
+      properties:
+        Token Error:
+          type: string
+          enum:
+            - "Invalid Token"
+            - "Token required"

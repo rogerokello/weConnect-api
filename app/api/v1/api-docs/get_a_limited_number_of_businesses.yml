@@ -1,0 +1,50 @@
+Endpoint to get only a few number of businesses using a limit parameter
+---
+tags:
+  - Business
+parameters:
+  - name: Authorization
+    description: A json web token to be used for each request
+    type: string
+    in: header
+    required: true
+  - name: limit
+    description: A number of businesses to be returned
+    type: integer
+    in: query
+    required: true
+
+responses:
+  201:
+    description: The businesses that were found after the search
+    schema: 
+      type: object
+      properties:
+        "message":
+          type: Array
+  401:
+    description: No limit parameter found in query or limit parameter not an integer
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string
+          enum:
+           - "Please specify a limit get parameter"
+           - "Please specify the limit get parameter as an integer"
+  404:
+    description: No limit parameter found in query or limit parameter not an integer
+    schema: 
+      type: object
+      properties:
+        "Message":
+          type: string
+          enum:
+           - "Sorry currently no businesses are present"
+  403:
+    description: A token error, invalid token or missing token
+    schema: 
+      type: object
+      properties:
+        "Token Error":
+          type: string
